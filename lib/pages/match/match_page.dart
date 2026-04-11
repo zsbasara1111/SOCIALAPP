@@ -68,7 +68,6 @@ class MatchPage extends StatelessWidget {
                 commonHobbies: const ['周杰伦', '《三体》', '原神'],
                 onLike: () {},
                 onDislike: () {},
-                onTap: () {},
               ),
             ),
           ),
