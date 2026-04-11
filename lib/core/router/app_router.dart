@@ -52,10 +52,10 @@ class RoutePaths {
 /// 路由状态
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
-    initialLocation: RoutePaths.impeccableShowcase,
+    initialLocation: RoutePaths.main,
     debugLogDiagnostics: true,
     routes: [
-      // Impeccable 风格选择页面 (默认首页)
+      // Impeccable 风格选择页面
       GoRoute(
         path: RoutePaths.impeccableShowcase,
         name: RouteNames.impeccableShowcase,
