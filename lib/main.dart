@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/providers/supabase_provider.dart';
+import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
-import 'pages/ui_preview_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -11,7 +11,10 @@ Future<void> main() async {
   try {
     await initializeSupabase();
   } catch (e) {
+    // 如果 Supabase 未配置，打印警告但继续运行
+    // 这样可以在没有后端的情况下预览UI
     debugPrint('Warning: Supabase initialization failed: $e');
+    debugPrint('Please configure Supabase credentials in lib/core/config/supabase_config.dart');
   }
 
   runApp(
@@ -21,16 +24,18 @@ Future<void> main() async {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'UI方案预览',
+  Widget build(BuildContext context, WidgetRef ref) {
+    final router = ref.watch(routerProvider);
+
+    return MaterialApp.router(
+      title: '社交App',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      home: const UIPreviewPage(),
+      routerConfig: router,
     );
   }
 }

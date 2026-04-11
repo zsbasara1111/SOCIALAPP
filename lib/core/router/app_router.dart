@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../pages/design_showcase_page.dart';
+import '../../pages/ui_showcase_page.dart';
 import '../../pages/auth/login_page.dart';
 import '../../pages/auth/register_page.dart';
 import '../../pages/auth/phone_verification_page.dart';
@@ -15,6 +16,7 @@ import '../../pages/vip/vip_center_page.dart';
 
 /// 路由名称常量
 class RouteNames {
+  static const String uiShowcase = 'ui-showcase';
   static const String showcase = 'showcase';
   static const String login = 'login';
   static const String register = 'register';
@@ -30,6 +32,7 @@ class RouteNames {
 
 /// 路由路径常量
 class RoutePaths {
+  static const String uiShowcase = '/ui-showcase';
   static const String showcase = '/showcase';
   static const String login = '/login';
   static const String register = '/register';
@@ -46,9 +49,16 @@ class RoutePaths {
 /// 路由状态
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
-    initialLocation: RoutePaths.showcase,
+    initialLocation: RoutePaths.uiShowcase,
     debugLogDiagnostics: true,
     routes: [
+      // UI 风格选择页面
+      GoRoute(
+        path: RoutePaths.uiShowcase,
+        name: RouteNames.uiShowcase,
+        builder: (context, state) => const UIShowcasePage(),
+      ),
+
       // 设计展示页面
       GoRoute(
         path: RoutePaths.showcase,
@@ -158,6 +168,12 @@ final routerProvider = Provider<GoRouter>((ref) {
 
 /// 路由扩展方法
 extension GoRouterExtension on BuildContext {
+  /// 前往UI风格选择页
+  void goUIShowcase() => go(RoutePaths.uiShowcase);
+
+  /// 前往设计展示页
+  void goDesignShowcase() => go(RoutePaths.showcase);
+
   /// 前往登录页
   void goLogin() => go(RoutePaths.login);
 
