@@ -181,13 +181,15 @@ class DawnGlowTheme {
         centerTitle: true,
         systemOverlayStyle: SystemUiOverlayStyle.dark,
       ),
-      elevatedButtonTheme: ElevatedButton.themeFrom(
-        backgroundColor: primary,
-        foregroundColor: textInverse,
-        elevation: 0,
-        padding: const EdgeInsets.symmetric(horizontal: spaceXl, vertical: spaceLg),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(radiusXl),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: primary,
+          foregroundColor: textInverse,
+          elevation: 0,
+          padding: const EdgeInsets.symmetric(horizontal: spaceXl, vertical: spaceLg),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(radiusXl),
+          ),
         ),
       ),
       cardTheme: CardThemeData(
