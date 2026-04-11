@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../pages/design_showcase_page.dart';
 import '../../pages/ui_showcase_page.dart';
+import '../../pages/impeccable_showcase_page.dart';
 import '../../pages/auth/login_page.dart';
 import '../../pages/auth/register_page.dart';
 import '../../pages/auth/phone_verification_page.dart';
@@ -16,6 +17,7 @@ import '../../pages/vip/vip_center_page.dart';
 
 /// 路由名称常量
 class RouteNames {
+  static const String impeccableShowcase = 'impeccable-showcase';
   static const String uiShowcase = 'ui-showcase';
   static const String showcase = 'showcase';
   static const String login = 'login';
@@ -32,6 +34,7 @@ class RouteNames {
 
 /// 路由路径常量
 class RoutePaths {
+  static const String impeccableShowcase = '/impeccable';
   static const String uiShowcase = '/ui-showcase';
   static const String showcase = '/showcase';
   static const String login = '/login';
@@ -49,10 +52,17 @@ class RoutePaths {
 /// 路由状态
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
-    initialLocation: RoutePaths.uiShowcase,
+    initialLocation: RoutePaths.impeccableShowcase,
     debugLogDiagnostics: true,
     routes: [
-      // UI 风格选择页面
+      // Impeccable 风格选择页面 (默认首页)
+      GoRoute(
+        path: RoutePaths.impeccableShowcase,
+        name: RouteNames.impeccableShowcase,
+        builder: (context, state) => const ImpeccableShowcasePage(),
+      ),
+
+      // UI 风格选择页面 (旧版10个方案)
       GoRoute(
         path: RoutePaths.uiShowcase,
         name: RouteNames.uiShowcase,
@@ -168,6 +178,9 @@ final routerProvider = Provider<GoRouter>((ref) {
 
 /// 路由扩展方法
 extension GoRouterExtension on BuildContext {
+  /// 前往Impeccable风格选择页
+  void goImpeccableShowcase() => go(RoutePaths.impeccableShowcase);
+
   /// 前往UI风格选择页
   void goUIShowcase() => go(RoutePaths.uiShowcase);
 
