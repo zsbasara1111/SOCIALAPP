@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/services/ai_service.dart';
 import '../../providers/ai_assistant_provider.dart';
+import '../../providers/red_heart_provider.dart';
 import '../../widgets/chat/ai_assistant_button.dart';
 import '../../widgets/chat/topic_suggestions_panel.dart';
 
@@ -151,6 +152,52 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
               style: AppTheme.titleMedium.copyWith(
                 fontWeight: FontWeight.w600,
               ),
+            ),
+            // 红心互点标记
+            Consumer(
+              builder: (context, ref, child) {
+                final isMutual = ref.watch(
+                  isMutualHeartProvider(widget.userId),
+                );
+                if (!isMutual) return const SizedBox.shrink();
+                return Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [
+                          Color(0xFFE91E63),
+                          Color(0xFFFF6B9D),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.favorite,
+                          size: 10,
+                          color: Colors.white,
+                        ),
+                        SizedBox(width: 2),
+                        Text(
+                          '红心',
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
             ),
           ],
         ),
