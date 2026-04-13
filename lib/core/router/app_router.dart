@@ -8,12 +8,15 @@ import '../../pages/auth/login_page.dart';
 import '../../pages/auth/register_page.dart';
 import '../../pages/auth/phone_verification_page.dart';
 import '../../pages/profile/profile_setup_page.dart';
-import '../../pages/match/match_page.dart';
+import '../../presentation/pages/match/match_page.dart';
 import '../../pages/posts/posts_page.dart';
 import '../../pages/chat/chat_list_page.dart';
 import '../../pages/profile/my_profile_page.dart';
 import '../../pages/main/main_scaffold.dart';
-import '../../pages/vip/vip_center_page.dart';
+import '../../presentation/pages/vip/vip_center_page.dart';
+import '../../pages/hobby/hobby_selection_page.dart';
+import '../../pages/hobby/hobby_showcase_page.dart';
+import '../../pages/profile/profile_hobbies_page.dart';
 
 /// 路由名称常量
 class RouteNames {
@@ -30,6 +33,9 @@ class RouteNames {
   static const String chat = 'chat';
   static const String profile = 'profile';
   static const String vipCenter = 'vip-center';
+  static const String hobbySelection = 'hobby-selection';
+  static const String profileHobbies = 'profile-hobbies';
+  static const String hobbyShowcase = 'hobby-showcase';
 }
 
 /// 路由路径常量
@@ -47,6 +53,9 @@ class RoutePaths {
   static const String chat = '/chat';
   static const String profile = '/profile';
   static const String vipCenter = '/vip-center';
+  static const String hobbySelection = '/hobby-selection';
+  static const String profileHobbies = '/profile-hobbies';
+  static const String hobbyShowcase = '/hobby-showcase';
 }
 
 /// 路由状态
@@ -106,6 +115,30 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: RoutePaths.vipCenter,
         name: RouteNames.vipCenter,
         builder: (context, state) => const VipCenterPage(),
+      ),
+
+      // 爱好系统展示页面
+      GoRoute(
+        path: RoutePaths.hobbyShowcase,
+        name: RouteNames.hobbyShowcase,
+        builder: (context, state) => const HobbyShowcasePage(),
+      ),
+
+      // 爱好选择页面
+      GoRoute(
+        path: RoutePaths.hobbySelection,
+        name: RouteNames.hobbySelection,
+        builder: (context, state) => HobbySelectionPage(
+          onNext: () => context.goProfileSetup(),
+          onSkip: () => context.goProfileSetup(),
+        ),
+      ),
+
+      // 个人资料爱好管理
+      GoRoute(
+        path: RoutePaths.profileHobbies,
+        name: RouteNames.profileHobbies,
+        builder: (context, state) => const ProfileHobbiesPage(),
       ),
 
       // 主页面 (带底部导航)
@@ -207,6 +240,15 @@ extension GoRouterExtension on BuildContext {
 
   /// 前往VIP中心
   void goVipCenter() => push(RoutePaths.vipCenter);
+
+  /// 前往爱好选择页面
+  void goHobbySelection() => push(RoutePaths.hobbySelection);
+
+  /// 前往爱好系统展示页面
+  void goHobbyShowcase() => push(RoutePaths.hobbyShowcase);
+
+  /// 前往个人资料爱好管理
+  void goProfileHobbies() => push(RoutePaths.profileHobbies);
 
   /// 返回上一页
   void goBack() => pop();
