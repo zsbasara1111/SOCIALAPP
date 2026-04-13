@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../data/services/payment_service.dart';
 
 /// VIP套餐类型
 enum VipPlan {
@@ -191,7 +192,11 @@ class VipState {
 
 /// VIP状态管理
 class VipNotifier extends StateNotifier<VipState> {
-  VipNotifier() : super(const VipState()) {
+  final IPaymentService _paymentService;
+
+  VipNotifier({IPaymentService? paymentService})
+      : _paymentService = paymentService ?? PaymentService(),
+        super(const VipState()) {
     // 初始化时加载VIP状态
     _loadVipStatus();
   }
@@ -211,19 +216,47 @@ class VipNotifier extends StateNotifier<VipState> {
   }
 
   /// 购买VIP
-  Future<bool> purchaseVip(VipPlan plan) async {
+  ///
+  /// [plan] - 选择的VIP套餐
+  /// [method] - 支付方式
+  /// 返回支付订单信息
+  Future<PaymentOrder> purchaseVip(
+    VipPlan plan, {
+    required PaymentMethod method,
+  }) async {
     state = state.copyWith(isLoading: true, error: null);
 
     try {
-      // TODO: 调用支付SDK
-      // 1. 创建订单
-      // 2. 调起支付
-      // 3. 验证支付结果
-      // 4. 更新VIP状态
+      // 1. 调起支付
+      final order = await _paymentService.initiatePayment(
+        productId: 'vip_${plan.name}',
+        productName: plan.displayName,
+        amount: plan.price,
+        method: method,
+      );
 
-      // 模拟支付成功
-      await Future.delayed(const Duration(seconds: 2));
+      if (order.result != PaymentResult.success) {
+        state = state.copyWith(
+          isLoading: false,
+          error: order.errorMessage ?? '支付失败',
+        );
+        return order;
+      }
 
+      // 2. 服务端验证支付结果
+      final isVerified = await _paymentService.verifyPayment(order);
+      if (!isVerified) {
+        state = state.copyWith(
+          isLoading: false,
+          error: '支付验证失败',
+        );
+        return order.copyWith(
+          result: PaymentResult.failed,
+          errorMessage: '支付验证失败',
+        );
+      }
+
+      // 3. 更新VIP状态
       final now = DateTime.now();
       state = state.copyWith(
         isVip: true,
@@ -232,13 +265,13 @@ class VipNotifier extends StateNotifier<VipState> {
         isLoading: false,
       );
 
-      return true;
+      return order;
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
         error: '购买失败，请重试',
       );
-      return false;
+      rethrow;
     }
   }
 
@@ -287,7 +320,7 @@ class VipNotifier extends StateNotifier<VipState> {
 
 /// VIP提供者
 final vipProvider = StateNotifierProvider<VipNotifier, VipState>((ref) {
-  return VipNotifier();
+  return VipNotifier(paymentService: paymentService);
 });
 
 /// VIP状态提供者（简化版，只返回是否VIP）

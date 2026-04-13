@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../providers/vip_provider.dart';
+import 'payment_method_page.dart';
 
 /// VIP中心页面
 class VipCenterPage extends ConsumerStatefulWidget {
@@ -537,18 +538,14 @@ class _VipCenterPageState extends ConsumerState<VipCenterPage> {
               child: ElevatedButton(
                 onPressed: vipState.isLoading
                     ? null
-                    : () async {
-                        final success = await ref
-                            .read(vipProvider.notifier)
-                            .purchaseVip(selectedPlan);
-                        if (success && mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('VIP购买成功！'),
-                              backgroundColor: AppTheme.success,
+                    : () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => PaymentMethodPage(
+                              plan: selectedPlan,
                             ),
-                          );
-                        }
+                          ),
+                        );
                       },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.vipGold,
@@ -558,22 +555,13 @@ class _VipCenterPageState extends ConsumerState<VipCenterPage> {
                     borderRadius: BorderRadius.circular(AppTheme.radiusMd),
                   ),
                 ),
-                child: vipState.isLoading
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation(Color(0xFF1A1D23)),
-                        ),
-                      )
-                    : const Text(
-                        '立即开通',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                child: const Text(
+                  '立即开通',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ),
           ],
