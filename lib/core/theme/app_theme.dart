@@ -47,6 +47,7 @@ class AppTheme {
 
   // 功能色
   static const Color success = UrbanExplorerTheme.success;
+  static const Color successDark = Color(0xFF15803D);
   static const Color error = UrbanExplorerTheme.error;
   static const Color warning = UrbanExplorerTheme.warning;
   static const Color info = UrbanExplorerTheme.info;
@@ -71,6 +72,7 @@ class AppTheme {
   static const double spaceLg = UrbanExplorerTheme.spaceLg;
   static const double spaceXl = UrbanExplorerTheme.spaceXl;
   static const double space2Xl = UrbanExplorerTheme.space2Xl;
+  static const double space3Xl = 64.0;
 
   // ==================== 圆角系统 ====================
 
@@ -78,6 +80,7 @@ class AppTheme {
   static const double radiusMd = UrbanExplorerTheme.radiusMd;
   static const double radiusLg = UrbanExplorerTheme.radiusLg;
   static const double radiusXl = UrbanExplorerTheme.radiusXl;
+  static const double radiusFull = 9999.0;
 
   // ==================== 阴影系统 ====================
 

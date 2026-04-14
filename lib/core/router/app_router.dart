@@ -14,9 +14,9 @@ import '../../presentation/pages/chat/chat_list_page.dart';
 import '../../pages/profile/my_profile_page.dart';
 import '../../pages/main/main_scaffold.dart';
 import '../../presentation/pages/vip/vip_center_page.dart';
-import '../../pages/hobby/hobby_selection_page.dart';
-import '../../pages/hobby/hobby_showcase_page.dart';
-import '../../pages/profile/profile_hobbies_page.dart';
+import '../../presentation/pages/hobby/hobby_selection_page.dart';
+import '../../presentation/pages/hobby/hobby_showcase_page.dart';
+import '../../presentation/pages/profile/profile_hobbies_page.dart';
 
 /// 路由名称常量
 class RouteNames {

@@ -204,15 +204,6 @@ class MatchCard extends StatelessWidget {
                   color: AppTheme.primary.withOpacity(0.5),
                 ),
               ),
-              const SizedBox(height: AppTheme.spaceMd),
-              Text(
-                user.nickname,
-                style: TextStyle(
-                  color: AppTheme.textSecondary,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
             ],
           ),
         ),
