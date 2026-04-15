@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/router/app_router.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/widgets.dart';
 
@@ -192,7 +193,7 @@ class MainScaffold extends StatelessWidget {
               subtitle: '分享你的生活瞬间',
               onTap: () {
                 Navigator.pop(context);
-                // TODO: 前往发布动态页面
+                context.goCreatePost();
               },
             ),
             const SizedBox(height: AppTheme.spaceLg),
@@ -202,7 +203,7 @@ class MainScaffold extends StatelessWidget {
               subtitle: '上传精美照片',
               onTap: () {
                 Navigator.pop(context);
-                // TODO: 前往发布照片页面
+                context.goCreatePost();
               },
             ),
             const SizedBox(height: AppTheme.space2Xl),

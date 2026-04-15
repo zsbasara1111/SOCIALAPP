@@ -639,6 +639,7 @@ class VipCard extends StatelessWidget {
                   child: Text(
                     '立即升级',
                     style: AppTheme.labelLarge.copyWith(
+                      color: isPopular ? AppTheme.vipGold : Colors.white,
                       fontWeight: FontWeight.w600,
                     ),
                   ),

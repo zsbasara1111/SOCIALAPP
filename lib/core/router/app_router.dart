@@ -17,6 +17,7 @@ import '../../presentation/pages/vip/vip_center_page.dart';
 import '../../presentation/pages/hobby/hobby_selection_page.dart';
 import '../../presentation/pages/hobby/hobby_showcase_page.dart';
 import '../../presentation/pages/profile/profile_hobbies_page.dart';
+import '../../presentation/pages/posts/create_post_page.dart';
 
 /// 路由名称常量
 class RouteNames {
@@ -36,6 +37,7 @@ class RouteNames {
   static const String hobbySelection = 'hobby-selection';
   static const String profileHobbies = 'profile-hobbies';
   static const String hobbyShowcase = 'hobby-showcase';
+  static const String createPost = 'create-post';
 }
 
 /// 路由路径常量
@@ -56,6 +58,7 @@ class RoutePaths {
   static const String hobbySelection = '/hobby-selection';
   static const String profileHobbies = '/profile-hobbies';
   static const String hobbyShowcase = '/hobby-showcase';
+  static const String createPost = '/create-post';
 }
 
 /// 路由状态
@@ -115,6 +118,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: RoutePaths.vipCenter,
         name: RouteNames.vipCenter,
         builder: (context, state) => const VipCenterPage(),
+      ),
+
+      // 发布动态
+      GoRoute(
+        path: RoutePaths.createPost,
+        name: RouteNames.createPost,
+        builder: (context, state) => const CreatePostPage(),
       ),
 
       // 爱好系统展示页面
@@ -240,6 +250,9 @@ extension GoRouterExtension on BuildContext {
 
   /// 前往VIP中心
   void goVipCenter() => push(RoutePaths.vipCenter);
+
+  /// 前往发布动态页面
+  void goCreatePost() => push(RoutePaths.createPost);
 
   /// 前往爱好选择页面
   void goHobbySelection() => push(RoutePaths.hobbySelection);

@@ -1,11 +1,18 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 import 'core/providers/supabase_provider.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Web 平台使用 Path URL 策略，支持直接访问子路由
+  if (kIsWeb) {
+    setUrlStrategy(PathUrlStrategy());
+  }
 
   // 初始化 Supabase (带有错误处理)
   try {
