@@ -16,6 +16,8 @@ class HobbyLibraryPage extends ConsumerStatefulWidget {
 class _HobbyLibraryPageState extends ConsumerState<HobbyLibraryPage> {
   // 当前选中的分类 ID
   String? _selectedCategoryId;
+  // 添加自定义分类时选中的图标
+  IconData? _selectedNewCategoryIcon;
 
   @override
   Widget build(BuildContext context) {
@@ -592,6 +594,7 @@ class _HobbyLibraryPageState extends ConsumerState<HobbyLibraryPage> {
   /// 显示添加自定义分类底部弹窗
   void _showAddCategorySheet(BuildContext context) {
     final controller = TextEditingController();
+    _selectedNewCategoryIcon = _commonIcons.first;
 
     showModalBottomSheet(
       context: context,
@@ -599,146 +602,157 @@ class _HobbyLibraryPageState extends ConsumerState<HobbyLibraryPage> {
       backgroundColor: Colors.transparent,
       builder: (context) => StatefulBuilder(
         builder: (context, setModalState) {
-          IconData selectedIcon = _commonIcons.first;
-
           return Padding(
             padding: EdgeInsets.only(
               bottom: MediaQuery.of(context).viewInsets.bottom,
             ),
-            child: Container(
-              decoration: BoxDecoration(
-                color: AppTheme.surface,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(AppTheme.radiusXl),
-                ),
-              ),
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(AppTheme.spaceLg),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 40,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: AppTheme.textTertiary.withOpacity(0.3),
-                        borderRadius: BorderRadius.circular(2),
-                      ),
+            child: DraggableScrollableSheet(
+              expand: false,
+              initialChildSize: 0.65,
+              minChildSize: 0.5,
+              maxChildSize: 0.9,
+              builder: (context, scrollController) {
+                return Container(
+                  decoration: BoxDecoration(
+                    color: AppTheme.surface,
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(AppTheme.radiusXl),
                     ),
                   ),
-                  const SizedBox(height: AppTheme.spaceLg),
-                  Text(
-                    '添加新分类',
-                    style: AppTheme.headlineSmall,
-                  ),
-                  const SizedBox(height: AppTheme.spaceMd),
-                  TextField(
-                    controller: controller,
-                    autofocus: true,
-                    decoration: InputDecoration(
-                      hintText: '例如：篮球、摄影、模型...',
-                      hintStyle: AppTheme.bodyMedium.copyWith(
-                        color: AppTheme.textTertiary,
-                      ),
-                      filled: true,
-                      fillColor: AppTheme.background,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-                        borderSide: BorderSide.none,
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: AppTheme.spaceLg,
-                        vertical: AppTheme.spaceMd,
-                      ),
-                    ),
-                    onSubmitted: (value) {
-                      if (value.trim().isNotEmpty) {
-                        _addCategory(value.trim(), selectedIcon);
-                        Navigator.of(context).pop();
-                      }
-                    },
-                  ),
-                  const SizedBox(height: AppTheme.spaceLg),
-                  Text(
-                    '选择图标',
-                    style: AppTheme.titleMedium.copyWith(
-                      color: AppTheme.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: AppTheme.spaceMd),
-                  Wrap(
-                    spacing: AppTheme.spaceSm,
-                    runSpacing: AppTheme.spaceSm,
-                    children: _commonIcons.map((icon) {
-                      final isSelected = icon == selectedIcon;
-                      return GestureDetector(
-                        onTap: () {
-                          setModalState(() {
-                            selectedIcon = icon;
-                          });
-                        },
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 150),
-                          width: 44,
-                          height: 44,
+                  padding: const EdgeInsets.all(AppTheme.spaceLg),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Center(
+                        child: Container(
+                          width: 40,
+                          height: 4,
                           decoration: BoxDecoration(
-                            color: isSelected
-                                ? AppTheme.primary.withOpacity(0.15)
-                                : AppTheme.background,
+                            color: AppTheme.textTertiary.withOpacity(0.3),
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: AppTheme.spaceLg),
+                      Text(
+                        '添加新分类',
+                        style: AppTheme.headlineSmall,
+                      ),
+                      const SizedBox(height: AppTheme.spaceMd),
+                      TextField(
+                        controller: controller,
+                        autofocus: true,
+                        decoration: InputDecoration(
+                          hintText: '例如：篮球、摄影、模型...',
+                          hintStyle: AppTheme.bodyMedium.copyWith(
+                            color: AppTheme.textTertiary,
+                          ),
+                          filled: true,
+                          fillColor: AppTheme.background,
+                          border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-                            border: Border.all(
-                              color: isSelected
-                                  ? AppTheme.primary
-                                  : AppTheme.surfaceVariant,
-                              width: isSelected ? 2 : 1,
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: AppTheme.spaceLg,
+                            vertical: AppTheme.spaceMd,
+                          ),
+                        ),
+                        onSubmitted: (value) {
+                          if (value.trim().isNotEmpty) {
+                            _addCategory(value.trim(), _selectedNewCategoryIcon);
+                            Navigator.of(context).pop();
+                          }
+                        },
+                      ),
+                      const SizedBox(height: AppTheme.spaceLg),
+                      Text(
+                        '选择图标',
+                        style: AppTheme.titleMedium.copyWith(
+                          color: AppTheme.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: AppTheme.spaceMd),
+                      Expanded(
+                        child: ListView(
+                          controller: scrollController,
+                          children: [
+                            Wrap(
+                              spacing: AppTheme.spaceSm,
+                              runSpacing: AppTheme.spaceSm,
+                              children: _commonIcons.map((icon) {
+                                final isSelected = icon == _selectedNewCategoryIcon;
+                                return GestureDetector(
+                                  onTap: () {
+                                    setModalState(() {
+                                      _selectedNewCategoryIcon = icon;
+                                    });
+                                  },
+                                  child: AnimatedContainer(
+                                    duration: const Duration(milliseconds: 150),
+                                    width: 44,
+                                    height: 44,
+                                    decoration: BoxDecoration(
+                                      color: isSelected
+                                          ? AppTheme.primary.withOpacity(0.15)
+                                          : AppTheme.background,
+                                      borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+                                      border: Border.all(
+                                        color: isSelected
+                                            ? AppTheme.primary
+                                            : AppTheme.surfaceVariant,
+                                        width: isSelected ? 2 : 1,
+                                      ),
+                                    ),
+                                    child: Icon(
+                                      icon,
+                                      color: isSelected
+                                          ? AppTheme.primary
+                                          : AppTheme.textTertiary,
+                                      size: 22,
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
                             ),
-                          ),
-                          child: Icon(
-                            icon,
-                            color: isSelected
-                                ? AppTheme.primary
-                                : AppTheme.textTertiary,
-                            size: 22,
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                  const SizedBox(height: AppTheme.spaceXl),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 52,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        final value = controller.text.trim();
-                        if (value.isNotEmpty) {
-                          _addCategory(value, selectedIcon);
-                          Navigator.of(context).pop();
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.primary,
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-                        ),
-                      ),
-                      child: Text(
-                        '确认添加',
-                        style: AppTheme.labelLarge.copyWith(
-                          color: Colors.white,
+                            const SizedBox(height: AppTheme.spaceXl),
+                            SizedBox(
+                              width: double.infinity,
+                              height: 52,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  final value = controller.text.trim();
+                                  if (value.isNotEmpty) {
+                                    _addCategory(value, _selectedNewCategoryIcon);
+                                    Navigator.of(context).pop();
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppTheme.primary,
+                                  foregroundColor: Colors.white,
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+                                  ),
+                                ),
+                                child: Text(
+                                  '确认添加',
+                                  style: AppTheme.labelLarge.copyWith(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: AppTheme.spaceMd),
+                          ],
                         ),
                       ),
-                    ),
+                    ],
                   ),
-                  const SizedBox(height: AppTheme.spaceMd),
-                ],
-              ),
+                );
+              },
             ),
-          ),
           );
         },
       ),
