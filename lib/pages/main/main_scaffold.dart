@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/router/app_router.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/widgets.dart';
+import '../../presentation/widgets/main/planet_orbit_button.dart';
 
 /// 主页面 Scaffold (带底部导航)
 class MainScaffold extends StatelessWidget {
@@ -140,100 +141,11 @@ class MainScaffold extends StatelessWidget {
     );
   }
 
-  /// 发布按钮
+  /// 爱好库入口按钮（替换原来的发布按钮）
   Widget _buildFab(BuildContext context) {
-    return Container(
-      width: 56,
-      height: 56,
-      decoration: BoxDecoration(
-        gradient: AppTheme.primaryGradient,
-        shape: BoxShape.circle,
-        boxShadow: AppTheme.shadowMd,
-      ),
-      child: FloatingActionButton(
-        onPressed: () {
-          // TODO: 显示发布选项
-          _showPublishOptions(context);
-        },
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        child: const Icon(Icons.add, color: Colors.white, size: 28),
-      ),
-    );
-  }
-
-  /// 显示发布选项
-  void _showPublishOptions(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        decoration: BoxDecoration(
-          color: AppTheme.surface,
-          borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(AppTheme.radiusXl),
-          ),
-        ),
-        padding: const EdgeInsets.all(AppTheme.spaceXl),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: AppTheme.textTertiary.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(height: AppTheme.spaceXl),
-            _buildPublishOption(
-              icon: Icons.edit,
-              title: '发布动态',
-              subtitle: '分享你的生活瞬间',
-              onTap: () {
-                Navigator.pop(context);
-                context.goCreatePost();
-              },
-            ),
-            const SizedBox(height: AppTheme.spaceLg),
-            _buildPublishOption(
-              icon: Icons.photo_camera,
-              title: '发布照片',
-              subtitle: '上传精美照片',
-              onTap: () {
-                Navigator.pop(context);
-                context.goCreatePost();
-              },
-            ),
-            const SizedBox(height: AppTheme.space2Xl),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPublishOption({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required VoidCallback onTap,
-  }) {
-    return ListTile(
-      leading: Container(
-        padding: const EdgeInsets.all(AppTheme.spaceMd),
-        decoration: BoxDecoration(
-          color: AppTheme.primaryLight.withOpacity(0.3),
-          borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-        ),
-        child: Icon(icon, color: AppTheme.primary),
-      ),
-      title: Text(title, style: AppTheme.titleMedium),
-      subtitle: Text(
-        subtitle,
-        style: AppTheme.bodySmall.copyWith(color: AppTheme.textSecondary),
-      ),
-      onTap: onTap,
+    return PlanetOrbitButton(
+      onTap: () => context.push(RoutePaths.hobbyLibrary),
+      size: 56,
     );
   }
 }

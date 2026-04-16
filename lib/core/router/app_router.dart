@@ -16,6 +16,7 @@ import '../../pages/main/main_scaffold.dart';
 import '../../presentation/pages/vip/vip_center_page.dart';
 import '../../presentation/pages/hobby/hobby_selection_page.dart';
 import '../../presentation/pages/hobby/hobby_showcase_page.dart';
+import '../../presentation/pages/hobby/hobby_library_page.dart';
 import '../../presentation/pages/profile/profile_hobbies_page.dart';
 import '../../presentation/pages/posts/create_post_page.dart';
 
@@ -37,6 +38,7 @@ class RouteNames {
   static const String hobbySelection = 'hobby-selection';
   static const String profileHobbies = 'profile-hobbies';
   static const String hobbyShowcase = 'hobby-showcase';
+  static const String hobbyLibrary = 'hobby-library';
   static const String createPost = 'create-post';
 }
 
@@ -58,6 +60,7 @@ class RoutePaths {
   static const String hobbySelection = '/hobby-selection';
   static const String profileHobbies = '/profile-hobbies';
   static const String hobbyShowcase = '/hobby-showcase';
+  static const String hobbyLibrary = '/hobby-library';
   static const String createPost = '/create-post';
 }
 
@@ -149,6 +152,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: RoutePaths.profileHobbies,
         name: RouteNames.profileHobbies,
         builder: (context, state) => const ProfileHobbiesPage(),
+      ),
+
+      // 爱好库编辑页面
+      GoRoute(
+        path: RoutePaths.hobbyLibrary,
+        name: RouteNames.hobbyLibrary,
+        builder: (context, state) => const HobbyLibraryPage(),
       ),
 
       // 主页面 (带底部导航)
@@ -262,6 +272,9 @@ extension GoRouterExtension on BuildContext {
 
   /// 前往个人资料爱好管理
   void goProfileHobbies() => push(RoutePaths.profileHobbies);
+
+  /// 前往爱好库编辑页面
+  void goHobbyLibrary() => push(RoutePaths.hobbyLibrary);
 
   /// 返回上一页
   void goBack() => pop();

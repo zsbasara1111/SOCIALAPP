@@ -111,6 +111,21 @@ class _PostsPageState extends ConsumerState<PostsPage> {
               fontFamily: AppTheme.fontFamilyDisplay,
             ),
           ),
+          // 发布动态入口
+          IconButton(
+            onPressed: () => context.goCreatePost(),
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppTheme.surface,
+                borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+              ),
+              child: Icon(
+                Icons.add,
+                color: AppTheme.primary,
+              ),
+            ),
+          ),
           IconButton(
             onPressed: () {
               // TODO: 打开通知页面
