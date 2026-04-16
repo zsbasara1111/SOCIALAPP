@@ -725,17 +725,17 @@ class _HobbyLibraryPageState extends ConsumerState<HobbyLibraryPage> {
                           backgroundColor: AppTheme.primary,
                           foregroundColor: Colors.white,
                           elevation: 0,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(AppTheme.radiusMd),
                           ),
-                        ),
-                        child: Text(
-                          '确认添加',
-                          style: AppTheme.titleMedium.copyWith(
-                            color: Colors.white,
+                          textStyle: const TextStyle(
+                            fontSize: 16,
                             fontWeight: FontWeight.w600,
+                            color: Colors.white,
                           ),
                         ),
+                        child: const Text('确认添加'),
                       ),
                     ),
                   ],
