@@ -200,9 +200,7 @@ class _MyProfilePageState extends ConsumerState<MyProfilePage>
                           value: formatCompactNumber(stats.visitorsCount),
                           label: '看过我的人',
                           hasDot: stats.visitorsCount > 0,
-                          onTap: () {
-                            // TODO: 跳转到访客列表
-                          },
+                          onTap: () => context.goVisitors(),
                         ),
                         _buildStatItem(
                           value: formatCompactNumber(stats.whoLikedMeCount),
@@ -213,7 +211,7 @@ class _MyProfilePageState extends ConsumerState<MyProfilePage>
                             if (!isVip) {
                               _showVipRequiredDialog();
                             } else {
-                              // TODO: 跳转到谁喜欢我列表
+                              context.goWhoLikedMe();
                             }
                           },
                         ),

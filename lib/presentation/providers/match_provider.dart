@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../data/models/hobby_category.dart';
 import 'hobby_provider.dart';
+import 'user_interactions_provider.dart';
 
 /// 匹配模式枚举
 enum MatchMode {
@@ -198,7 +198,9 @@ class PreciseFilter {
 
 /// 匹配状态管理
 class MatchNotifier extends StateNotifier<MatchState> {
-  MatchNotifier() : super(const MatchState());
+  final Ref _ref;
+
+  MatchNotifier(this._ref) : super(const MatchState());
 
   /// 切换匹配模式
   void switchMode(MatchMode mode) {
@@ -256,6 +258,20 @@ class MatchNotifier extends StateNotifier<MatchState> {
   /// 喜欢/右滑
   Future<void> likeUser(String userId) async {
     // TODO: 发送喜欢到服务器
+
+    final current = state.currentUser;
+    if (current != null) {
+      _ref.read(userInteractionsProvider.notifier).addLikedUser(
+        InteractionUser(
+          id: current.id,
+          nickname: current.nickname,
+          avatarUrl: current.avatarUrl,
+          age: current.age,
+          city: current.city,
+          interactedAt: DateTime.now(),
+        ),
+      );
+    }
 
     // 模拟匹配成功（20%概率）
     final isMatch = DateTime.now().millisecond % 5 == 0;
@@ -366,7 +382,7 @@ class MatchNotifier extends StateNotifier<MatchState> {
 
 /// 匹配提供者
 final matchProvider = StateNotifierProvider<MatchNotifier, MatchState>((ref) {
-  return MatchNotifier();
+  return MatchNotifier(ref);
 });
 
 /// 当前匹配模式提供者

@@ -23,6 +23,8 @@ import '../../presentation/pages/profile/user_profile_view_page.dart';
 import '../../presentation/pages/profile/edit_profile_page.dart';
 import '../../presentation/pages/profile/my_photos_page.dart';
 import '../../presentation/pages/profile/liked_users_page.dart';
+import '../../presentation/pages/profile/visitors_page.dart';
+import '../../presentation/pages/profile/who_liked_me_page.dart';
 import '../../presentation/pages/profile/settings_page.dart';
 import '../../presentation/providers/hobby_provider.dart';
 
@@ -50,6 +52,8 @@ class RouteNames {
   static const String editProfile = 'edit-profile';
   static const String myPhotos = 'my-photos';
   static const String likedUsers = 'liked-users';
+  static const String visitors = 'visitors';
+  static const String whoLikedMe = 'who-liked-me';
   static const String settings = 'settings';
 }
 
@@ -77,6 +81,8 @@ class RoutePaths {
   static const String editProfile = '/edit-profile';
   static const String myPhotos = '/my-photos';
   static const String likedUsers = '/liked-users';
+  static const String visitors = '/visitors';
+  static const String whoLikedMe = '/who-liked-me';
   static const String settings = '/settings';
 }
 
@@ -223,6 +229,20 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const LikedUsersPage(),
       ),
 
+      // 看过我的人
+      GoRoute(
+        path: RoutePaths.visitors,
+        name: RouteNames.visitors,
+        builder: (context, state) => const VisitorsPage(),
+      ),
+
+      // 谁喜欢我
+      GoRoute(
+        path: RoutePaths.whoLikedMe,
+        name: RouteNames.whoLikedMe,
+        builder: (context, state) => const WhoLikedMePage(),
+      ),
+
       // 设置
       GoRoute(
         path: RoutePaths.settings,
@@ -362,6 +382,12 @@ extension GoRouterExtension on BuildContext {
 
   /// 前往我喜欢的人页面
   void goLikedUsers() => push(RoutePaths.likedUsers);
+
+  /// 前往看过我的人页面
+  void goVisitors() => push(RoutePaths.visitors);
+
+  /// 前往谁喜欢我页面
+  void goWhoLikedMe() => push(RoutePaths.whoLikedMe);
 
   /// 前往设置页面
   void goSettings() => push(RoutePaths.settings);

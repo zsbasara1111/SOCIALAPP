@@ -1,31 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../providers/user_interactions_provider.dart';
 
 /// 我喜欢的人页面
-class LikedUsersPage extends StatelessWidget {
+class LikedUsersPage extends ConsumerWidget {
   const LikedUsersPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // TODO: 从服务器加载真实数据
-    final likedUsers = [
-      _LikedUser(
-        id: '1',
-        name: '小雨',
-        age: 24,
-        city: '上海',
-        avatar: null,
-        likedAt: '3天前',
-      ),
-      _LikedUser(
-        id: '2',
-        name: '旅行者',
-        age: 26,
-        city: '北京',
-        avatar: null,
-        likedAt: '1周前',
-      ),
-    ];
+  Widget build(BuildContext context, WidgetRef ref) {
+    final likedUsers = ref.watch(userInteractionsProvider).likedUsers;
 
     return Scaffold(
       backgroundColor: AppTheme.background,
@@ -50,7 +34,7 @@ class LikedUsersPage extends StatelessWidget {
               itemCount: likedUsers.length,
               itemBuilder: (context, index) {
                 final user = likedUsers[index];
-                return _buildUserCard(context, user);
+                return _buildUserCard(context, ref, user);
               },
             ),
     );
@@ -85,7 +69,7 @@ class LikedUsersPage extends StatelessWidget {
     );
   }
 
-  Widget _buildUserCard(BuildContext context, _LikedUser user) {
+  Widget _buildUserCard(BuildContext context, WidgetRef ref, InteractionUser user) {
     return Container(
       margin: const EdgeInsets.only(bottom: AppTheme.spaceMd),
       padding: const EdgeInsets.all(AppTheme.spaceLg),
@@ -102,22 +86,22 @@ class LikedUsersPage extends StatelessWidget {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  AppTheme.primary.withOpacity(0.8),
-                  AppTheme.accent.withOpacity(0.8),
+                  AppTheme.primary.withValues(alpha: 0.8),
+                  AppTheme.accent.withValues(alpha: 0.8),
                 ],
               ),
               shape: BoxShape.circle,
             ),
-            child: user.avatar != null
+            child: user.avatarUrl != null
                 ? ClipOval(
                     child: Image.network(
-                      user.avatar!,
+                      user.avatarUrl!,
                       fit: BoxFit.cover,
                     ),
                   )
                 : Center(
                     child: Text(
-                      user.name.substring(0, 1),
+                      user.nickname.substring(0, 1),
                       style: AppTheme.titleLarge.copyWith(
                         color: Colors.white,
                       ),
@@ -131,21 +115,21 @@ class LikedUsersPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '${user.name} · ${user.age}岁',
+                  '${user.nickname}${user.age != null ? ' · ${user.age}岁' : ''}',
                   style: AppTheme.titleMedium.copyWith(
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  user.city,
-                  style: AppTheme.bodyMedium.copyWith(
-                    color: AppTheme.textSecondary,
+                if (user.city != null)
+                  Text(
+                    user.city!,
+                    style: AppTheme.bodyMedium.copyWith(
+                      color: AppTheme.textSecondary,
+                    ),
                   ),
-                ),
                 const SizedBox(height: 4),
                 Text(
-                  '喜欢于 ${user.likedAt}',
+                  '喜欢于 ${_formatTime(user.interactedAt)}',
                   style: AppTheme.labelSmall.copyWith(
                     color: AppTheme.textTertiary,
                   ),
@@ -156,7 +140,7 @@ class LikedUsersPage extends StatelessWidget {
           // 取消喜欢按钮
           IconButton(
             onPressed: () {
-              // TODO: 取消喜欢
+              ref.read(userInteractionsProvider.notifier).removeLikedUser(user.id);
             },
             icon: Icon(
               Icons.favorite,
@@ -167,22 +151,21 @@ class LikedUsersPage extends StatelessWidget {
       ),
     );
   }
-}
 
-class _LikedUser {
-  final String id;
-  final String name;
-  final int age;
-  final String city;
-  final String? avatar;
-  final String likedAt;
+  String _formatTime(DateTime time) {
+    final now = DateTime.now();
+    final diff = now.difference(time);
 
-  const _LikedUser({
-    required this.id,
-    required this.name,
-    required this.age,
-    required this.city,
-    this.avatar,
-    required this.likedAt,
-  });
+    if (diff.inMinutes < 1) {
+      return '刚刚';
+    } else if (diff.inHours < 1) {
+      return '${diff.inMinutes}分钟前';
+    } else if (diff.inDays < 1) {
+      return '${diff.inHours}小时前';
+    } else if (diff.inDays < 7) {
+      return '${diff.inDays}天前';
+    } else {
+      return '${time.month}月${time.day}日';
+    }
+  }
 }

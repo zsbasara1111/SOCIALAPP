@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/models/hobby_category.dart';
 import '../../providers/hobby_provider.dart';
+import '../../providers/user_interactions_provider.dart';
 
 /// 用户资料查看页面
 /// 展示对方的基本信息、爱好库和共同爱好
-class UserProfileViewPage extends StatelessWidget {
+class UserProfileViewPage extends ConsumerStatefulWidget {
   final String userId;
   final String userName;
   final String? avatar;
@@ -28,16 +30,39 @@ class UserProfileViewPage extends StatelessWidget {
   });
 
   @override
+  ConsumerState<UserProfileViewPage> createState() => _UserProfileViewPageState();
+}
+
+class _UserProfileViewPageState extends ConsumerState<UserProfileViewPage> {
+  @override
+  void initState() {
+    super.initState();
+    // 记录访客（假设当前用户打开了别人的资料页）
+    Future.microtask(() {
+      ref.read(userInteractionsProvider.notifier).addProfileVisitor(
+        InteractionUser(
+          id: widget.userId,
+          nickname: widget.userName,
+          avatarUrl: widget.avatar,
+          age: widget.age,
+          city: widget.city,
+          interactedAt: DateTime.now(),
+        ),
+      );
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     // 计算共同爱好（按作品名称匹配）
-    final myHobbyNames = myHobbies.map((h) => h.itemName).toSet();
-    final commonHobbies = userHobbies
+    final myHobbyNames = widget.myHobbies.map((h) => h.itemName).toSet();
+    final commonHobbies = widget.userHobbies
         .where((h) => myHobbyNames.contains(h.itemName))
         .toList();
 
     // 按分类ID分组对方的爱好
     final Map<String, List<String>> hobbiesByCategory = {};
-    for (final hobby in userHobbies) {
+    for (final hobby in widget.userHobbies) {
       hobbiesByCategory.putIfAbsent(hobby.categoryId, () => []);
       if (!hobbiesByCategory[hobby.categoryId]!.contains(hobby.itemName)) {
         hobbiesByCategory[hobby.categoryId]!.add(hobby.itemName);
@@ -126,16 +151,16 @@ class UserProfileViewPage extends StatelessWidget {
                 width: 4,
               ),
             ),
-            child: avatar != null
+            child: widget.avatar != null
                 ? ClipOval(
                     child: Image.network(
-                      avatar!,
+                      widget.avatar!,
                       fit: BoxFit.cover,
                     ),
                   )
                 : Center(
                     child: Text(
-                      userName.substring(0, 1),
+                      widget.userName.substring(0, 1),
                       style: AppTheme.displayMedium.copyWith(
                         color: Colors.white,
                       ),
@@ -145,18 +170,18 @@ class UserProfileViewPage extends StatelessWidget {
           const SizedBox(height: AppTheme.spaceLg),
           // 昵称
           Text(
-            userName,
+            widget.userName,
             style: AppTheme.headlineSmall.copyWith(
               fontWeight: FontWeight.w700,
             ),
           ),
           const SizedBox(height: AppTheme.spaceXs),
           // 年龄和城市
-          if (age != null || city != null)
+          if (widget.age != null || widget.city != null)
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if (age != null) ...[
+                if (widget.age != null) ...[
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: AppTheme.spaceSm,
@@ -167,7 +192,7 @@ class UserProfileViewPage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(AppTheme.radiusSm),
                     ),
                     child: Text(
-                      '$age岁',
+                      '${widget.age}岁',
                       style: AppTheme.bodyMedium.copyWith(
                         color: AppTheme.primary,
                         fontWeight: FontWeight.w500,
@@ -176,7 +201,7 @@ class UserProfileViewPage extends StatelessWidget {
                   ),
                   const SizedBox(width: AppTheme.spaceSm),
                 ],
-                if (city != null)
+                if (widget.city != null)
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: AppTheme.spaceSm,
@@ -187,7 +212,7 @@ class UserProfileViewPage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(AppTheme.radiusSm),
                     ),
                     child: Text(
-                      city!,
+                      widget.city!,
                       style: AppTheme.bodyMedium.copyWith(
                         color: AppTheme.accent,
                         fontWeight: FontWeight.w500,
@@ -198,9 +223,9 @@ class UserProfileViewPage extends StatelessWidget {
             ),
           const SizedBox(height: AppTheme.spaceMd),
           // 签名
-          if (bio != null && bio!.isNotEmpty)
+          if (widget.bio != null && widget.bio!.isNotEmpty)
             Text(
-              bio!,
+              widget.bio!,
               style: AppTheme.bodyMedium.copyWith(
                 color: AppTheme.textSecondary,
               ),
@@ -363,7 +388,7 @@ class UserProfileViewPage extends StatelessWidget {
                 runSpacing: AppTheme.spaceSm,
                 children: items.map((item) {
                   // 判断是否也是我的爱好
-                  final isCommon = myHobbies.any(
+                  final isCommon = widget.myHobbies.any(
                     (h) => h.itemName == item,
                   );
                   return Container(
