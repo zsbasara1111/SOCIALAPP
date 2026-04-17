@@ -199,6 +199,7 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
       appBar: AppBar(
         backgroundColor: AppTheme.surface,
         elevation: 0,
+        toolbarHeight: 88,
         leading: IconButton(
           onPressed: () => Navigator.of(context).pop(),
           icon: const Icon(Icons.arrow_back),
@@ -212,8 +213,8 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
             GestureDetector(
               onTap: _viewUserProfile,
               child: Container(
-                width: 56,
-                height: 56,
+                width: 72,
+                height: 72,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
@@ -233,7 +234,7 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
                     : Center(
                         child: Text(
                           widget.userName.substring(0, 1),
-                          style: AppTheme.headlineSmall.copyWith(
+                          style: AppTheme.headlineMedium.copyWith(
                             color: Colors.white,
                           ),
                         ),
@@ -241,11 +242,12 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
               ),
             ),
             const SizedBox(width: AppTheme.spaceMd),
-            // 用户名 + 红心徽章
+            // 用户名 + 红心徽章 + 在线状态/距离
             Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // 上半部分：用户名 + 红心徽章
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -286,6 +288,14 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
                       },
                     ),
                   ],
+                ),
+                const SizedBox(height: 4),
+                // 下半部分：上次在线时间 · 两人距离
+                Text(
+                  '10分钟前 · 2.5km',
+                  style: AppTheme.bodyMedium.copyWith(
+                    color: AppTheme.textSecondary,
+                  ),
                 ),
               ],
             ),
