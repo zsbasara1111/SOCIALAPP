@@ -149,19 +149,19 @@ class RedHeartNotifier extends StateNotifier<RedHeartState> {
       // TODO: 从Supabase加载红心记录
       await Future.delayed(const Duration(milliseconds: 500));
 
-      // 模拟数据：已有一个互点红心（user1）
+      // 模拟数据：已有一个互点红心（小雨，id='1'）
       final mockMutual = RedHeartRecord(
         id: 'rh1',
         senderId: 'currentUser',
-        receiverId: 'user1',
+        receiverId: '1',
         sentAt: DateTime.now().subtract(const Duration(days: 1)),
         isMutual: true,
         mutualAt: DateTime.now().subtract(const Duration(hours: 2)),
       );
 
-      // 模拟数据：user2 已经在聊天中对我激活了红心（6分钟前）
+      // 模拟数据：旅行者（id='2'）已经在聊天中对我激活了红心（6分钟前）
       final mockReceivedActivations = {
-        'user2': DateTime.now().subtract(const Duration(minutes: 6)),
+        '2': DateTime.now().subtract(const Duration(minutes: 6)),
       };
 
       state = state.copyWith(
