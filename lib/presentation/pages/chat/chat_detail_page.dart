@@ -212,8 +212,8 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
             GestureDetector(
               onTap: _viewUserProfile,
               child: Container(
-                width: 48,
-                height: 48,
+                width: 56,
+                height: 56,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
@@ -233,14 +233,14 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
                     : Center(
                         child: Text(
                           widget.userName.substring(0, 1),
-                          style: AppTheme.titleLarge.copyWith(
+                          style: AppTheme.headlineSmall.copyWith(
                             color: Colors.white,
                           ),
                         ),
                       ),
               ),
             ),
-            const SizedBox(width: AppTheme.spaceSm),
+            const SizedBox(width: AppTheme.spaceMd),
             // 用户名 + 红心徽章
             Column(
               mainAxisSize: MainAxisSize.min,
@@ -248,11 +248,12 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
               children: [
                 Row(
                   mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
                       widget.userName,
-                      style: AppTheme.titleLarge.copyWith(
-                        fontWeight: FontWeight.w600,
+                      style: AppTheme.headlineSmall.copyWith(
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                     // 红心互点标记（仅爱心图标）
@@ -263,9 +264,9 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
                         );
                         if (!isMutual) return const SizedBox.shrink();
                         return Padding(
-                          padding: const EdgeInsets.only(left: 6),
+                          padding: const EdgeInsets.only(left: 8),
                           child: Container(
-                            padding: const EdgeInsets.all(5),
+                            padding: const EdgeInsets.all(7),
                             decoration: const BoxDecoration(
                               gradient: LinearGradient(
                                 colors: [
@@ -277,7 +278,7 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
                             ),
                             child: const Icon(
                               Icons.favorite,
-                              size: 12,
+                              size: 16,
                               color: Colors.white,
                             ),
                           ),
