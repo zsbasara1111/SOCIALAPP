@@ -208,86 +208,6 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            // 聊天红心按钮（未互点时显示，与话题助手对称）
-            Consumer(
-              builder: (context, ref, child) {
-                final isMutual = ref.watch(
-                  isMutualHeartProvider(widget.userId),
-                );
-                if (isMutual) {
-                  // 保持对称占位
-                  return const SizedBox(
-                    width: 44,
-                    height: 44,
-                  );
-                }
-
-                final hasActivated = ref.watch(
-                  hasChatRedHeartProvider(widget.userId),
-                );
-
-                return GestureDetector(
-                  onTap: () {
-                    ref
-                        .read(redHeartProvider.notifier)
-                        .toggleChatRedHeart(widget.userId);
-                  },
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppTheme.spaceMd,
-                      vertical: AppTheme.spaceSm,
-                    ),
-                    decoration: BoxDecoration(
-                      color: hasActivated
-                          ? const Color(0xFFFF6B9D).withOpacity(0.15)
-                          : AppTheme.surface,
-                      borderRadius: BorderRadius.circular(AppTheme.radiusFull),
-                      border: Border.all(
-                        color: hasActivated
-                            ? const Color(0xFFFF6B9D)
-                            : AppTheme.surfaceVariant,
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          width: 28,
-                          height: 28,
-                          decoration: BoxDecoration(
-                            color: hasActivated
-                                ? const Color(0xFFFF6B9D)
-                                : AppTheme.surfaceVariant,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            hasActivated
-                                ? Icons.favorite
-                                : Icons.favorite_border,
-                            color: hasActivated
-                                ? Colors.white
-                                : AppTheme.textTertiary,
-                            size: 16,
-                          ),
-                        ),
-                        const SizedBox(width: AppTheme.spaceSm),
-                        Text(
-                          hasActivated ? '已喜欢' : '喜欢',
-                          style: AppTheme.labelLarge.copyWith(
-                            color: hasActivated
-                                ? const Color(0xFFFF6B9D)
-                                : AppTheme.textSecondary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-            const SizedBox(width: AppTheme.spaceMd),
             // 头像（可点击查看资料）
             GestureDetector(
               onTap: _viewUserProfile,
@@ -407,8 +327,61 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
                   children: [
                     // AI助手头部
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
+                        // 聊天红心按钮（未互点时显示，与话题助手轴对称）
+                        Consumer(
+                          builder: (context, ref, child) {
+                            final isMutual = ref.watch(
+                              isMutualHeartProvider(widget.userId),
+                            );
+                            if (isMutual) return const SizedBox.shrink();
+
+                            final hasActivated = ref.watch(
+                              hasChatRedHeartProvider(widget.userId),
+                            );
+
+                            return GestureDetector(
+                              onTap: () {
+                                ref
+                                    .read(redHeartProvider.notifier)
+                                    .toggleChatRedHeart(widget.userId);
+                              },
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 200),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: AppTheme.spaceMd,
+                                  vertical: AppTheme.spaceSm,
+                                ),
+                                decoration: BoxDecoration(
+                                  gradient: hasActivated
+                                      ? const LinearGradient(
+                                          colors: [
+                                            Color(0xFFFF6B9D),
+                                            Color(0xFFFF8E53),
+                                          ],
+                                        )
+                                      : null,
+                                  color: hasActivated
+                                      ? null
+                                      : AppTheme.surfaceVariant.withOpacity(0.3),
+                                  borderRadius: BorderRadius.circular(
+                                      AppTheme.radiusFull),
+                                ),
+                                child: Icon(
+                                  hasActivated
+                                      ? Icons.favorite
+                                      : Icons.favorite_border,
+                                  color: hasActivated
+                                      ? Colors.white
+                                      : AppTheme.textTertiary,
+                                  size: 28,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
                         // AI按钮
                         AIAssistantButton(
                           onTap: () {

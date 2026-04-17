@@ -262,7 +262,7 @@ class ChatListPage extends ConsumerWidget {
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          // 红心互点标记
+                          // 红心互点标记（仅爱心图标）
                           Consumer(
                             builder: (context, ref, child) {
                               final isMutual = ref.watch(
@@ -272,37 +272,20 @@ class ChatListPage extends ConsumerWidget {
                               return Padding(
                                 padding: const EdgeInsets.only(left: 6),
                                 child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 6,
-                                    vertical: 2,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    gradient: const LinearGradient(
+                                  padding: const EdgeInsets.all(5),
+                                  decoration: const BoxDecoration(
+                                    gradient: LinearGradient(
                                       colors: [
                                         Color(0xFFE91E63),
                                         Color(0xFFFF6B9D),
                                       ],
                                     ),
-                                    borderRadius: BorderRadius.circular(8),
+                                    shape: BoxShape.circle,
                                   ),
-                                  child: const Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        Icons.favorite,
-                                        size: 10,
-                                        color: Colors.white,
-                                      ),
-                                      SizedBox(width: 2),
-                                      Text(
-                                        '红心',
-                                        style: TextStyle(
-                                          fontSize: 10,
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ],
+                                  child: const Icon(
+                                    Icons.favorite,
+                                    size: 12,
+                                    color: Colors.white,
                                   ),
                                 ),
                               );
