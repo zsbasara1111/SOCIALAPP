@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// 红心记录
@@ -46,6 +47,8 @@ class RedHeartState {
   final List<RedHeartRecord> sentHearts;      // 我发出的红心
   final List<RedHeartRecord> receivedHearts;  // 我收到的红心
   final List<RedHeartRecord> mutualHearts;    // 互点红心
+  final Map<String, DateTime> chatActivations;     // 我在聊天中对某用户激活红心的时间
+  final Map<String, DateTime> receivedChatActivations; // 对方在聊天中对我激活红心的时间
   final bool isLoading;
   final String? error;
 
@@ -53,6 +56,8 @@ class RedHeartState {
     this.sentHearts = const [],
     this.receivedHearts = const [],
     this.mutualHearts = const [],
+    this.chatActivations = const {},
+    this.receivedChatActivations = const {},
     this.isLoading = false,
     this.error,
   });
@@ -61,6 +66,8 @@ class RedHeartState {
     List<RedHeartRecord>? sentHearts,
     List<RedHeartRecord>? receivedHearts,
     List<RedHeartRecord>? mutualHearts,
+    Map<String, DateTime>? chatActivations,
+    Map<String, DateTime>? receivedChatActivations,
     bool? isLoading,
     String? error,
   }) {
@@ -68,6 +75,8 @@ class RedHeartState {
       sentHearts: sentHearts ?? this.sentHearts,
       receivedHearts: receivedHearts ?? this.receivedHearts,
       mutualHearts: mutualHearts ?? this.mutualHearts,
+      chatActivations: chatActivations ?? this.chatActivations,
+      receivedChatActivations: receivedChatActivations ?? this.receivedChatActivations,
       isLoading: isLoading ?? this.isLoading,
       error: error ?? this.error,
     );
@@ -98,12 +107,38 @@ class RedHeartState {
       return null;
     }
   }
+
+  /// 是否在聊天中对某用户激活了红心
+  bool hasChatActivated(String userId) {
+    return chatActivations.containsKey(userId);
+  }
+
+  /// 某用户是否在聊天中对我激活了红心
+  bool hasReceivedChatActivation(String userId) {
+    return receivedChatActivations.containsKey(userId);
+  }
 }
 
 /// 红心状态管理
 class RedHeartNotifier extends StateNotifier<RedHeartState> {
+  Timer? _mutualCheckTimer;
+
   RedHeartNotifier() : super(const RedHeartState()) {
     _loadRedHearts();
+    _startMutualCheckTimer();
+  }
+
+  @override
+  void dispose() {
+    _mutualCheckTimer?.cancel();
+    super.dispose();
+  }
+
+  /// 启动互检定时器，每10秒检查一次
+  void _startMutualCheckTimer() {
+    _mutualCheckTimer = Timer.periodic(const Duration(seconds: 10), (_) {
+      _checkPendingMutuals();
+    });
   }
 
   /// 加载红心记录
@@ -114,7 +149,7 @@ class RedHeartNotifier extends StateNotifier<RedHeartState> {
       // TODO: 从Supabase加载红心记录
       await Future.delayed(const Duration(milliseconds: 500));
 
-      // 模拟数据：已有一个互点红心
+      // 模拟数据：已有一个互点红心（user1）
       final mockMutual = RedHeartRecord(
         id: 'rh1',
         senderId: 'currentUser',
@@ -124,8 +159,14 @@ class RedHeartNotifier extends StateNotifier<RedHeartState> {
         mutualAt: DateTime.now().subtract(const Duration(hours: 2)),
       );
 
+      // 模拟数据：user2 已经在聊天中对我激活了红心（6分钟前）
+      final mockReceivedActivations = {
+        'user2': DateTime.now().subtract(const Duration(minutes: 6)),
+      };
+
       state = state.copyWith(
         mutualHearts: [mockMutual],
+        receivedChatActivations: mockReceivedActivations,
         isLoading: false,
       );
     } catch (e) {
@@ -219,6 +260,64 @@ class RedHeartNotifier extends StateNotifier<RedHeartState> {
     }
   }
 
+  /// 切换聊天红心状态
+  Future<void> toggleChatRedHeart(String userId) async {
+    final isActivated = state.hasChatActivated(userId);
+
+    if (isActivated) {
+      // 取消激活
+      final updatedActivations = Map<String, DateTime>.from(state.chatActivations);
+      updatedActivations.remove(userId);
+      state = state.copyWith(chatActivations: updatedActivations);
+    } else {
+      // 激活
+      final updatedActivations = Map<String, DateTime>.from(state.chatActivations);
+      updatedActivations[userId] = DateTime.now();
+      state = state.copyWith(chatActivations: updatedActivations);
+      _checkPendingMutuals();
+    }
+  }
+
+  /// 检查是否有满足5分钟条件的聊天红心互点
+  void _checkPendingMutuals() {
+    final now = DateTime.now();
+    final mutualDuration = const Duration(minutes: 5);
+
+    for (final entry in state.chatActivations.entries) {
+      final userId = entry.key;
+      final myActivatedAt = entry.value;
+      final theirActivatedAt = state.receivedChatActivations[userId];
+
+      // 跳过已经互点的
+      if (state.isMutualWith(userId)) continue;
+
+      if (theirActivatedAt != null) {
+        final myDuration = now.difference(myActivatedAt);
+        final theirDuration = now.difference(theirActivatedAt);
+        if (myDuration >= mutualDuration && theirDuration >= mutualDuration) {
+          _convertToMutual(userId);
+        }
+      }
+    }
+  }
+
+  /// 将聊天红心转为互点记录
+  Future<void> _convertToMutual(String userId) async {
+    final now = DateTime.now();
+    final record = RedHeartRecord(
+      id: 'rh_chat_${now.millisecondsSinceEpoch}',
+      senderId: 'currentUser',
+      receiverId: userId,
+      sentAt: now,
+      isMutual: true,
+      mutualAt: now,
+    );
+
+    state = state.copyWith(
+      mutualHearts: [...state.mutualHearts, record],
+    );
+  }
+
   /// 刷新状态
   Future<void> refresh() async {
     await _loadRedHearts();
@@ -239,6 +338,11 @@ final isMutualHeartProvider = Provider.family<bool, String>((ref, userId) {
 /// 是否已向某用户发送红心
 final hasSentHeartProvider = Provider.family<bool, String>((ref, userId) {
   return ref.watch(redHeartProvider).hasSentHeartTo(userId);
+});
+
+/// 是否在聊天中对某用户激活了红心
+final hasChatRedHeartProvider = Provider.family<bool, String>((ref, userId) {
+  return ref.watch(redHeartProvider).hasChatActivated(userId);
 });
 
 /// 互点红心列表

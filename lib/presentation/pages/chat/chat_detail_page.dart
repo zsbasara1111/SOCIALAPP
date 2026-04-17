@@ -8,6 +8,7 @@ import '../../providers/ai_assistant_provider.dart';
 import '../../providers/hobby_provider.dart';
 import '../../providers/red_heart_provider.dart';
 import '../../widgets/chat/ai_assistant_button.dart';
+import '../../widgets/chat/heart_burst_overlay.dart';
 import '../../widgets/chat/topic_suggestions_panel.dart';
 
 /// 聊天详情页面
@@ -40,11 +41,14 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
   final ScrollController _scrollController = ScrollController();
   final FocusNode _inputFocusNode = FocusNode();
   final List<ChatMessage> _messages = [];
+  bool _hasShownMutualAnimation = false;
+  bool _showingHeartAnimation = false;
 
   @override
   void initState() {
     super.initState();
     _loadMessages();
+    _ensureSystemMessageIfMutual();
   }
 
   @override
@@ -53,6 +57,37 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
     _scrollController.dispose();
     _inputFocusNode.dispose();
     super.dispose();
+  }
+
+  /// 如果已经是互点状态，确保系统消息存在于列表中
+  void _ensureSystemMessageIfMutual() {
+    Future.microtask(() {
+      final isMutual = ref.read(isMutualHeartProvider(widget.userId));
+      if (isMutual) {
+        _hasShownMutualAnimation = true;
+        _insertSystemMessageIfNeeded();
+      }
+    });
+  }
+
+  /// 插入系统消息（去重）
+  void _insertSystemMessageIfNeeded() {
+    const systemContent = '已经互相抱有好感了呢！可以尝试进行约会邀请啦~';
+    final alreadyExists = _messages.any(
+      (m) => m.isSystem && m.content == systemContent,
+    );
+    if (alreadyExists) return;
+
+    setState(() {
+      _messages.add(ChatMessage(
+        id: 'system_${DateTime.now().millisecondsSinceEpoch}',
+        content: systemContent,
+        isMe: false,
+        timestamp: DateTime.now(),
+        isSystem: true,
+      ));
+    });
+    _scrollToBottom();
   }
 
   void _loadMessages() {
@@ -132,8 +167,28 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
     );
   }
 
+  /// 显示互点动画和系统消息
+  void _showMutualAnimationAndMessage() {
+    if (_showingHeartAnimation) return;
+    setState(() {
+      _showingHeartAnimation = true;
+    });
+    _insertSystemMessageIfNeeded();
+  }
+
   @override
   Widget build(BuildContext context) {
+    // 监听互点状态变化（从 false -> true）
+    ref.listen<bool>(
+      isMutualHeartProvider(widget.userId),
+      (previous, current) {
+        if (previous == false && current == true && !_hasShownMutualAnimation) {
+          _hasShownMutualAnimation = true;
+          _showMutualAnimationAndMessage();
+        }
+      },
+    );
+
     // 获取当前用户爱好和对方爱好，用于话题生成
     final hobbyState = ref.watch(hobbyProvider);
     final myHobbyNames = hobbyState.selectedItems.map((e) => e.itemName).toList();
@@ -242,6 +297,34 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
         ),
         centerTitle: true,
         actions: [
+          // 聊天红心按钮（未互点时显示）
+          Consumer(
+            builder: (context, ref, child) {
+              final isMutual = ref.watch(
+                isMutualHeartProvider(widget.userId),
+              );
+              if (isMutual) return const SizedBox.shrink();
+
+              final hasActivated = ref.watch(
+                hasChatRedHeartProvider(widget.userId),
+              );
+
+              return IconButton(
+                onPressed: () {
+                  ref
+                      .read(redHeartProvider.notifier)
+                      .toggleChatRedHeart(widget.userId);
+                },
+                icon: Icon(
+                  hasActivated ? Icons.favorite : Icons.favorite_border,
+                  color: hasActivated
+                      ? const Color(0xFFFF6B9D)
+                      : AppTheme.textPrimary,
+                ),
+                tooltip: hasActivated ? '取消红心' : '发送红心',
+              );
+            },
+          ),
           // 更多选项
           IconButton(
             onPressed: () {
@@ -254,77 +337,93 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
           ),
         ],
       ),
-      body: Column(
+      body: Stack(
         children: [
-          // AI助手区域
-          Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppTheme.spaceLg,
-              vertical: AppTheme.spaceMd,
-            ),
-            decoration: BoxDecoration(
-              color: AppTheme.surface,
-              border: Border(
-                bottom: BorderSide(
-                  color: AppTheme.surfaceVariant,
+          Column(
+            children: [
+              // AI助手区域
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppTheme.spaceLg,
+                  vertical: AppTheme.spaceMd,
                 ),
-              ),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // AI助手头部
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                decoration: BoxDecoration(
+                  color: AppTheme.surface,
+                  border: Border(
+                    bottom: BorderSide(
+                      color: AppTheme.surfaceVariant,
+                    ),
+                  ),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    // AI按钮
-                    AIAssistantButton(
-                      onTap: () {
-                        ref.read(aiAssistantProvider.notifier).toggleExpanded();
+                    // AI助手头部
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        // AI按钮
+                        AIAssistantButton(
+                          onTap: () {
+                            ref.read(aiAssistantProvider.notifier).toggleExpanded();
+                          },
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: AppTheme.spaceMd),
+
+                    // 话题建议面板
+                    TopicSuggestionsPanel(
+                      userHobbies: myHobbyNames,
+                      matchHobbies: matchHobbyNames,
+                      onTopicTap: (topic) {
+                        // 将话题填入输入框并聚焦
+                        _messageController.text = topic;
+                        _messageController.selection = TextSelection.fromPosition(
+                          TextPosition(offset: topic.length),
+                        );
+                        // 通过延迟确保面板收起后再聚焦输入框
+                        Future.delayed(const Duration(milliseconds: 150), () {
+                          if (mounted) {
+                            FocusScope.of(context).requestFocus(_inputFocusNode);
+                          }
+                        });
                       },
                     ),
                   ],
                 ),
+              ),
 
-                const SizedBox(height: AppTheme.spaceMd),
-
-                // 话题建议面板
-                TopicSuggestionsPanel(
-                  userHobbies: myHobbyNames,
-                  matchHobbies: matchHobbyNames,
-                  onTopicTap: (topic) {
-                    // 将话题填入输入框并聚焦
-                    _messageController.text = topic;
-                    _messageController.selection = TextSelection.fromPosition(
-                      TextPosition(offset: topic.length),
-                    );
-                    // 通过延迟确保面板收起后再聚焦输入框
-                    Future.delayed(const Duration(milliseconds: 150), () {
-                      if (mounted) {
-                        FocusScope.of(context).requestFocus(_inputFocusNode);
-                      }
-                    });
+              // 消息列表
+              Expanded(
+                child: ListView.builder(
+                  controller: _scrollController,
+                  padding: const EdgeInsets.all(AppTheme.spaceLg),
+                  itemCount: _messages.length,
+                  itemBuilder: (context, index) {
+                    final message = _messages[index];
+                    return _buildMessageItem(message);
                   },
                 ),
-              ],
-            ),
+              ),
+
+              // 输入框
+              _buildInputArea(),
+            ],
           ),
 
-          // 消息列表
-          Expanded(
-            child: ListView.builder(
-              controller: _scrollController,
-              padding: const EdgeInsets.all(AppTheme.spaceLg),
-              itemCount: _messages.length,
-              itemBuilder: (context, index) {
-                final message = _messages[index];
-                return _buildMessageItem(message);
+          // 爱心特效覆盖层
+          if (_showingHeartAnimation)
+            HeartBurstOverlay(
+              onComplete: () {
+                if (mounted) {
+                  setState(() {
+                    _showingHeartAnimation = false;
+                  });
+                }
               },
             ),
-          ),
-
-          // 输入框
-          _buildInputArea(),
         ],
       ),
     );
@@ -332,6 +431,35 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
 
   /// 构建消息项
   Widget _buildMessageItem(ChatMessage message) {
+    // 系统消息居中显示
+    if (message.isSystem) {
+      return Center(
+        child: Container(
+          margin: const EdgeInsets.symmetric(vertical: AppTheme.spaceMd),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppTheme.spaceLg,
+            vertical: AppTheme.spaceMd,
+          ),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [
+                Color(0xFFFF6B9D),
+                Color(0xFFFF8E53),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(AppTheme.radiusFull),
+          ),
+          child: Text(
+            message.content,
+            style: AppTheme.bodyMedium.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      );
+    }
+
     final isMe = message.isMe;
 
     return Align(

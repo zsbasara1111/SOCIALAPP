@@ -276,11 +276,13 @@ class ChatMessage {
   final String content;
   final bool isMe;
   final DateTime timestamp;
+  final bool isSystem;
 
   const ChatMessage({
     required this.id,
     required this.content,
     required this.isMe,
     required this.timestamp,
+    this.isSystem = false,
   });
 }
