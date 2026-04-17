@@ -19,6 +19,8 @@ import '../../presentation/pages/hobby/hobby_showcase_page.dart';
 import '../../presentation/pages/hobby/hobby_library_page.dart';
 import '../../presentation/pages/profile/profile_hobbies_page.dart';
 import '../../presentation/pages/posts/create_post_page.dart';
+import '../../presentation/pages/profile/user_profile_view_page.dart';
+import '../../presentation/providers/hobby_provider.dart';
 
 /// 路由名称常量
 class RouteNames {
@@ -40,6 +42,7 @@ class RouteNames {
   static const String hobbyShowcase = 'hobby-showcase';
   static const String hobbyLibrary = 'hobby-library';
   static const String createPost = 'create-post';
+  static const String userProfile = 'user-profile';
 }
 
 /// 路由路径常量
@@ -62,6 +65,7 @@ class RoutePaths {
   static const String hobbyShowcase = '/hobby-showcase';
   static const String hobbyLibrary = '/hobby-library';
   static const String createPost = '/create-post';
+  static const String userProfile = '/user-profile';
 }
 
 /// 路由状态
@@ -159,6 +163,31 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: RoutePaths.hobbyLibrary,
         name: RouteNames.hobbyLibrary,
         builder: (context, state) => const HobbyLibraryPage(),
+      ),
+
+      // 用户资料查看页面
+      GoRoute(
+        path: RoutePaths.userProfile,
+        name: RouteNames.userProfile,
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>? ?? {};
+          final userHobbiesRaw = extra['userHobbies'] as List<dynamic>? ?? [];
+          final myHobbiesRaw = extra['myHobbies'] as List<dynamic>? ?? [];
+          return UserProfileViewPage(
+            userId: extra['userId'] as String? ?? '',
+            userName: extra['userName'] as String? ?? '',
+            avatar: extra['avatar'] as String?,
+            age: extra['age'] as int?,
+            city: extra['city'] as String?,
+            bio: extra['bio'] as String?,
+            userHobbies: userHobbiesRaw
+                .whereType<UserHobbyItem>()
+                .toList(),
+            myHobbies: myHobbiesRaw
+                .whereType<UserHobbyItem>()
+                .toList(),
+          );
+        },
       ),
 
       // 主页面 (带底部导航)
@@ -278,4 +307,10 @@ extension GoRouterExtension on BuildContext {
 
   /// 返回上一页
   void goBack() => pop();
+
+  /// 前往用户资料查看页面
+  void goUserProfile(Map<String, dynamic> extra) => push(
+        RoutePaths.userProfile,
+        extra: extra,
+      );
 }

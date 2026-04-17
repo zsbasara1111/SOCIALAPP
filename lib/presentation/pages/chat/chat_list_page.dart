@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../providers/hobby_provider.dart';
 import '../../providers/red_heart_provider.dart';
 import 'chat_detail_page.dart';
 
@@ -71,7 +72,7 @@ class ChatListPage extends ConsumerWidget {
             SliverList(
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
-                  // 模拟数据
+                  // 模拟数据（每个人的爱好不同）
                   final chats = [
                     _ChatData(
                       id: '1',
@@ -80,6 +81,14 @@ class ChatListPage extends ConsumerWidget {
                       time: '10:30',
                       unreadCount: 3,
                       avatar: null,
+                      age: 24,
+                      city: '上海',
+                      bio: '喜欢阅读和旅行，享受安静的午后时光',
+                      hobbies: [
+                        UserHobbyItem(categoryId: 'books', itemName: '《三体》'),
+                        UserHobbyItem(categoryId: 'travel', itemName: '日本'),
+                        UserHobbyItem(categoryId: 'movies', itemName: '《千与千寻》'),
+                      ],
                     ),
                     _ChatData(
                       id: '2',
@@ -88,6 +97,14 @@ class ChatListPage extends ConsumerWidget {
                       time: '昨天',
                       unreadCount: 0,
                       avatar: null,
+                      age: 26,
+                      city: '北京',
+                      bio: '用脚步丈量世界，用镜头记录风景',
+                      hobbies: [
+                        UserHobbyItem(categoryId: 'travel', itemName: '西藏'),
+                        UserHobbyItem(categoryId: 'photography', itemName: '风光摄影'),
+                        UserHobbyItem(categoryId: 'music', itemName: '民谣'),
+                      ],
                     ),
                     _ChatData(
                       id: '3',
@@ -96,6 +113,14 @@ class ChatListPage extends ConsumerWidget {
                       time: '昨天',
                       unreadCount: 1,
                       avatar: null,
+                      age: 25,
+                      city: '广州',
+                      bio: '人生苦短，唯有美食不可辜负',
+                      hobbies: [
+                        UserHobbyItem(categoryId: 'food', itemName: '日料'),
+                        UserHobbyItem(categoryId: 'food', itemName: '火锅'),
+                        UserHobbyItem(categoryId: 'movies', itemName: '《深夜食堂》'),
+                      ],
                     ),
                     _ChatData(
                       id: '4',
@@ -104,6 +129,14 @@ class ChatListPage extends ConsumerWidget {
                       time: '周一',
                       unreadCount: 0,
                       avatar: null,
+                      age: 23,
+                      city: '杭州',
+                      bio: '摄影是光的绘画',
+                      hobbies: [
+                        UserHobbyItem(categoryId: 'photography', itemName: '人像摄影'),
+                        UserHobbyItem(categoryId: 'photography', itemName: '胶片'),
+                        UserHobbyItem(categoryId: 'music', itemName: '爵士乐'),
+                      ],
                     ),
                   ];
 
@@ -122,6 +155,10 @@ class ChatListPage extends ConsumerWidget {
                             userId: chat.id,
                             userName: chat.name,
                             avatar: chat.avatar,
+                            age: chat.age,
+                            city: chat.city,
+                            bio: chat.bio,
+                            matchUserHobbies: chat.hobbies,
                           ),
                         ),
                       );
@@ -339,6 +376,10 @@ class _ChatData {
   final String time;
   final int unreadCount;
   final String? avatar;
+  final int? age;
+  final String? city;
+  final String? bio;
+  final List<UserHobbyItem> hobbies;
 
   const _ChatData({
     required this.id,
@@ -347,5 +388,9 @@ class _ChatData {
     required this.time,
     this.unreadCount = 0,
     this.avatar,
+    this.age,
+    this.city,
+    this.bio,
+    this.hobbies = const [],
   });
 }

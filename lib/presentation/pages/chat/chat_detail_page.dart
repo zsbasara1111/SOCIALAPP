@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/services/ai_service.dart';
 import '../../providers/ai_assistant_provider.dart';
+import '../../providers/hobby_provider.dart';
 import '../../providers/red_heart_provider.dart';
 import '../../widgets/chat/ai_assistant_button.dart';
 import '../../widgets/chat/topic_suggestions_panel.dart';
@@ -12,12 +15,20 @@ class ChatDetailPage extends ConsumerStatefulWidget {
   final String userId;
   final String userName;
   final String? avatar;
+  final int? age;
+  final String? city;
+  final String? bio;
+  final List<UserHobbyItem> matchUserHobbies;
 
   const ChatDetailPage({
     super.key,
     required this.userId,
     required this.userName,
     this.avatar,
+    this.age,
+    this.city,
+    this.bio,
+    this.matchUserHobbies = const [],
   });
 
   @override
@@ -101,8 +112,33 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
     });
   }
 
+  /// 查看对方资料
+  void _viewUserProfile() {
+    final hobbyState = ref.read(hobbyProvider);
+    final myHobbies = hobbyState.selectedItems;
+
+    context.push(
+      RoutePaths.userProfile,
+      extra: {
+        'userId': widget.userId,
+        'userName': widget.userName,
+        'avatar': widget.avatar,
+        'age': widget.age,
+        'city': widget.city,
+        'bio': widget.bio,
+        'userHobbies': widget.matchUserHobbies,
+        'myHobbies': myHobbies,
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    // 获取当前用户爱好和对方爱好，用于话题生成
+    final hobbyState = ref.watch(hobbyProvider);
+    final myHobbyNames = hobbyState.selectedItems.map((e) => e.itemName).toList();
+    final matchHobbyNames = widget.matchUserHobbies.map((e) => e.itemName).toList();
+
     return Scaffold(
       backgroundColor: AppTheme.background,
       appBar: AppBar(
@@ -116,34 +152,37 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
         title: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // 头像
-            Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    AppTheme.primary.withOpacity(0.8),
-                    AppTheme.accent.withOpacity(0.8),
-                  ],
+            // 头像（可点击查看资料）
+            GestureDetector(
+              onTap: _viewUserProfile,
+              child: Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      AppTheme.primary.withOpacity(0.8),
+                      AppTheme.accent.withOpacity(0.8),
+                    ],
+                  ),
+                  shape: BoxShape.circle,
                 ),
-                shape: BoxShape.circle,
-              ),
-              child: widget.avatar != null
-                  ? ClipOval(
-                      child: Image.network(
-                        widget.avatar!,
-                        fit: BoxFit.cover,
-                      ),
-                    )
-                  : Center(
-                      child: Text(
-                        widget.userName.substring(0, 1),
-                        style: AppTheme.titleMedium.copyWith(
-                          color: Colors.white,
+                child: widget.avatar != null
+                    ? ClipOval(
+                        child: Image.network(
+                          widget.avatar!,
+                          fit: BoxFit.cover,
+                        ),
+                      )
+                    : Center(
+                        child: Text(
+                          widget.userName.substring(0, 1),
+                          style: AppTheme.titleMedium.copyWith(
+                            color: Colors.white,
+                          ),
                         ),
                       ),
-                    ),
+              ),
             ),
             const SizedBox(width: AppTheme.spaceSm),
             // 用户名
@@ -251,6 +290,8 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
 
                 // 话题建议面板
                 TopicSuggestionsPanel(
+                  userHobbies: myHobbyNames,
+                  matchHobbies: matchHobbyNames,
                   onTopicTap: (topic) {
                     // 将话题填入输入框并聚焦
                     _messageController.text = topic;
@@ -443,4 +484,3 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
     return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
   }
 }
-

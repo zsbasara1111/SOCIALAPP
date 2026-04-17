@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../data/services/ai_service.dart';
 import '../../providers/ai_assistant_provider.dart';
 
 /// 话题建议面板
 class TopicSuggestionsPanel extends ConsumerWidget {
+  final List<String> userHobbies;
+  final List<String> matchHobbies;
   final Function(String)? onTopicTap;
 
   const TopicSuggestionsPanel({
     super.key,
+    required this.userHobbies,
+    required this.matchHobbies,
     this.onTopicTap,
   });
 
@@ -338,10 +343,9 @@ class TopicSuggestionsPanel extends ConsumerWidget {
 
   /// 刷新话题
   void _refreshTopics(BuildContext context, WidgetRef ref) {
-    // TODO: 获取实际的爱好数据
     ref.read(aiAssistantProvider.notifier).generateTopics(
-          userHobbies: const ['摄影', '旅行', '阅读'],
-          matchHobbies: const ['摄影', '美食', '电影'],
+          userHobbies: userHobbies,
+          matchHobbies: matchHobbies,
         );
   }
 }
