@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../../core/theme/app_theme.dart';
-import '../../../core/widgets/widgets.dart';
+import '../../core/router/app_router.dart';
+import '../../core/theme/app_theme.dart';
+import '../../core/widgets/widgets.dart';
 
 /// 我的页面
 class MyProfilePage extends StatelessWidget {
@@ -56,7 +57,9 @@ class MyProfilePage extends StatelessWidget {
                       '同城匹配 50次/天',
                       '查看谁喜欢我',
                     ],
-                    onSubscribe: () {},
+                    onSubscribe: () {
+                      context.goVipCenter();
+                    },
                   ),
                 ],
               ),
@@ -71,22 +74,30 @@ class MyProfilePage extends StatelessWidget {
                 _buildMenuItem(
                   icon: Icons.edit,
                   title: '编辑资料',
-                  onTap: () {},
+                  onTap: () {
+                    context.goEditProfile();
+                  },
                 ),
                 _buildMenuItem(
                   icon: Icons.photo_library,
                   title: '我的照片墙',
-                  onTap: () {},
+                  onTap: () {
+                    context.goMyPhotos();
+                  },
                 ),
                 _buildMenuItem(
                   icon: Icons.favorite,
                   title: '我喜欢的人',
-                  onTap: () {},
+                  onTap: () {
+                    context.goLikedUsers();
+                  },
                 ),
                 _buildMenuItem(
                   icon: Icons.settings,
                   title: '设置',
-                  onTap: () {},
+                  onTap: () {
+                    context.goSettings();
+                  },
                 ),
               ]),
             ),

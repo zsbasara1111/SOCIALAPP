@@ -20,6 +20,10 @@ import '../../presentation/pages/hobby/hobby_library_page.dart';
 import '../../presentation/pages/profile/profile_hobbies_page.dart';
 import '../../presentation/pages/posts/create_post_page.dart';
 import '../../presentation/pages/profile/user_profile_view_page.dart';
+import '../../presentation/pages/profile/edit_profile_page.dart';
+import '../../presentation/pages/profile/my_photos_page.dart';
+import '../../presentation/pages/profile/liked_users_page.dart';
+import '../../presentation/pages/profile/settings_page.dart';
 import '../../presentation/providers/hobby_provider.dart';
 
 /// 路由名称常量
@@ -43,6 +47,10 @@ class RouteNames {
   static const String hobbyLibrary = 'hobby-library';
   static const String createPost = 'create-post';
   static const String userProfile = 'user-profile';
+  static const String editProfile = 'edit-profile';
+  static const String myPhotos = 'my-photos';
+  static const String likedUsers = 'liked-users';
+  static const String settings = 'settings';
 }
 
 /// 路由路径常量
@@ -66,6 +74,10 @@ class RoutePaths {
   static const String hobbyLibrary = '/hobby-library';
   static const String createPost = '/create-post';
   static const String userProfile = '/user-profile';
+  static const String editProfile = '/edit-profile';
+  static const String myPhotos = '/my-photos';
+  static const String likedUsers = '/liked-users';
+  static const String settings = '/settings';
 }
 
 /// 路由状态
@@ -188,6 +200,34 @@ final routerProvider = Provider<GoRouter>((ref) {
                 .toList(),
           );
         },
+      ),
+
+      // 编辑资料
+      GoRoute(
+        path: RoutePaths.editProfile,
+        name: RouteNames.editProfile,
+        builder: (context, state) => const EditProfilePage(),
+      ),
+
+      // 我的照片墙
+      GoRoute(
+        path: RoutePaths.myPhotos,
+        name: RouteNames.myPhotos,
+        builder: (context, state) => const MyPhotosPage(),
+      ),
+
+      // 我喜欢的人
+      GoRoute(
+        path: RoutePaths.likedUsers,
+        name: RouteNames.likedUsers,
+        builder: (context, state) => const LikedUsersPage(),
+      ),
+
+      // 设置
+      GoRoute(
+        path: RoutePaths.settings,
+        name: RouteNames.settings,
+        builder: (context, state) => const SettingsPage(),
       ),
 
       // 主页面 (带底部导航)
@@ -313,4 +353,16 @@ extension GoRouterExtension on BuildContext {
         RoutePaths.userProfile,
         extra: extra,
       );
+
+  /// 前往编辑资料页面
+  void goEditProfile() => push(RoutePaths.editProfile);
+
+  /// 前往我的照片墙页面
+  void goMyPhotos() => push(RoutePaths.myPhotos);
+
+  /// 前往我喜欢的人页面
+  void goLikedUsers() => push(RoutePaths.likedUsers);
+
+  /// 前往设置页面
+  void goSettings() => push(RoutePaths.settings);
 }
