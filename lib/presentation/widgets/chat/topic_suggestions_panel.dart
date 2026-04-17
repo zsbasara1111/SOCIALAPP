@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../../data/services/ai_service.dart';
 import '../../providers/ai_assistant_provider.dart';
 
 /// 话题建议面板
@@ -57,16 +56,11 @@ class TopicSuggestionsPanel extends ConsumerWidget {
           width: 36,
           height: 36,
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: state.mode == AIAssistantMode.dating
-                  ? [
-                      const Color(0xFFFF6B9D),
-                      const Color(0xFFFF8E53),
-                    ]
-                  : [
-                      AppTheme.primary,
-                      AppTheme.accent,
-                    ],
+            gradient: const LinearGradient(
+              colors: [
+                AppTheme.primary,
+                AppTheme.accent,
+              ],
             ),
             borderRadius: BorderRadius.circular(AppTheme.radiusMd),
           ),
@@ -84,16 +78,14 @@ class TopicSuggestionsPanel extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                state.mode == AIAssistantMode.dating ? '约会建议' : '话题建议',
+                '话题建议',
                 style: AppTheme.titleMedium.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
               ),
               const SizedBox(height: 2),
               Text(
-                state.mode == AIAssistantMode.dating
-                    ? '基于共同爱好推荐约会场景'
-                    : '基于你们的共同爱好生成',
+                '基于你们的共同爱好生成',
                 style: AppTheme.bodySmall.copyWith(
                   color: AppTheme.textTertiary,
                 ),
@@ -106,7 +98,6 @@ class TopicSuggestionsPanel extends ConsumerWidget {
         if (!state.isLoading && state.topics.isNotEmpty)
           GestureDetector(
             onTap: () {
-              // TODO: 重新生成话题
               _refreshTopics(context, ref);
             },
             child: Container(
@@ -244,7 +235,7 @@ class TopicSuggestionsPanel extends ConsumerWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: state.topics.map((topic) {
-        return _buildTopicCard(context, ref, topic, state.mode);
+        return _buildTopicCard(context, ref, topic);
       }).toList(),
     );
   }
@@ -253,11 +244,8 @@ class TopicSuggestionsPanel extends ConsumerWidget {
   Widget _buildTopicCard(
     BuildContext context,
     WidgetRef ref,
-    TopicSuggestion topic,
-    AIAssistantMode mode,
+    dynamic topic,
   ) {
-    final isDating = mode == AIAssistantMode.dating;
-
     return GestureDetector(
       onTap: () {
         ref.read(aiAssistantProvider.notifier).useTopic();
@@ -269,25 +257,16 @@ class TopicSuggestionsPanel extends ConsumerWidget {
         margin: const EdgeInsets.only(bottom: AppTheme.spaceMd),
         padding: const EdgeInsets.all(AppTheme.spaceLg),
         decoration: BoxDecoration(
-          gradient: isDating
-              ? LinearGradient(
-                  colors: [
-                    const Color(0xFFFF6B9D).withOpacity(0.1),
-                    const Color(0xFFFF8E53).withOpacity(0.05),
-                  ],
-                )
-              : LinearGradient(
-                  colors: [
-                    AppTheme.primary.withOpacity(0.1),
-                    AppTheme.accent.withOpacity(0.05),
-                  ],
-                ),
-          color: isDating ? null : AppTheme.surface,
+          gradient: LinearGradient(
+            colors: [
+              AppTheme.primary.withOpacity(0.1),
+              AppTheme.accent.withOpacity(0.05),
+            ],
+          ),
+          color: AppTheme.surface,
           borderRadius: BorderRadius.circular(AppTheme.radiusLg),
           border: Border.all(
-            color: isDating
-                ? const Color(0xFFFF6B9D).withOpacity(0.3)
-                : AppTheme.primary.withOpacity(0.2),
+            color: AppTheme.primary.withOpacity(0.2),
           ),
         ),
         child: Column(
@@ -299,15 +278,13 @@ class TopicSuggestionsPanel extends ConsumerWidget {
                 Container(
                   padding: const EdgeInsets.all(6),
                   decoration: BoxDecoration(
-                    color: isDating
-                        ? const Color(0xFFFF6B9D).withOpacity(0.2)
-                        : AppTheme.primary.withOpacity(0.2),
+                    color: AppTheme.primary.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(AppTheme.radiusSm),
                   ),
                   child: Icon(
-                    isDating ? Icons.favorite : Icons.chat_bubble,
+                    Icons.chat_bubble,
                     size: 14,
-                    color: isDating ? const Color(0xFFFF6B9D) : AppTheme.primary,
+                    color: AppTheme.primary,
                   ),
                 ),
                 const SizedBox(width: AppTheme.spaceSm),
@@ -316,7 +293,7 @@ class TopicSuggestionsPanel extends ConsumerWidget {
                     topic.title,
                     style: AppTheme.titleSmall.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: isDating ? const Color(0xFFFF6B6B) : AppTheme.textPrimary,
+                      color: AppTheme.textPrimary,
                     ),
                   ),
                 ),
@@ -343,13 +320,13 @@ class TopicSuggestionsPanel extends ConsumerWidget {
                 Text(
                   '点击使用',
                   style: AppTheme.labelSmall.copyWith(
-                    color: isDating ? const Color(0xFFFF6B9D) : AppTheme.primary,
+                    color: AppTheme.primary,
                   ),
                 ),
                 Icon(
                   Icons.arrow_forward,
                   size: 12,
-                  color: isDating ? const Color(0xFFFF6B9D) : AppTheme.primary,
+                  color: AppTheme.primary,
                 ),
               ],
             ),

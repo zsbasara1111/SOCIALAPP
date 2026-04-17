@@ -6,14 +6,12 @@ class AIAssistantState {
   final List<TopicSuggestion> topics;
   final bool isLoading;
   final String? error;
-  final AIAssistantMode mode;
   final bool isExpanded;
 
   const AIAssistantState({
     this.topics = const [],
     this.isLoading = false,
     this.error,
-    this.mode = AIAssistantMode.normal,
     this.isExpanded = false,
   });
 
@@ -21,20 +19,18 @@ class AIAssistantState {
     List<TopicSuggestion>? topics,
     bool? isLoading,
     String? error,
-    AIAssistantMode? mode,
     bool? isExpanded,
   }) {
     return AIAssistantState(
       topics: topics ?? this.topics,
       isLoading: isLoading ?? this.isLoading,
       error: error ?? this.error,
-      mode: mode ?? this.mode,
       isExpanded: isExpanded ?? this.isExpanded,
     );
   }
 }
 
-/// AI助手状态管理
+/// AI助手状态管理（仅话题助手）
 class AIAssistantNotifier extends StateNotifier<AIAssistantState> {
   final AIService _aiService;
 
@@ -53,7 +49,7 @@ class AIAssistantNotifier extends StateNotifier<AIAssistantState> {
         userHobbies: userHobbies,
         matchHobbies: matchHobbies,
         chatHistory: chatHistory,
-        mode: state.mode,
+        mode: AIAssistantMode.normal,
       );
 
       state = state.copyWith(
@@ -67,16 +63,6 @@ class AIAssistantNotifier extends StateNotifier<AIAssistantState> {
         error: '生成话题失败，请重试',
       );
     }
-  }
-
-  /// 切换助手模式
-  void switchMode(AIAssistantMode mode) {
-    if (state.mode == mode) return;
-    state = state.copyWith(
-      mode: mode,
-      topics: [],
-      isExpanded: false,
-    );
   }
 
   /// 展开/收起话题面板
@@ -124,9 +110,4 @@ final aiLoadingProvider = Provider<bool>((ref) {
 /// AI助手是否展开
 final aiExpandedProvider = Provider<bool>((ref) {
   return ref.watch(aiAssistantProvider).isExpanded;
-});
-
-/// AI助手当前模式
-final aiModeProvider = Provider<AIAssistantMode>((ref) {
-  return ref.watch(aiAssistantProvider).mode;
 });

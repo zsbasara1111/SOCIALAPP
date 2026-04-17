@@ -236,10 +236,8 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
               children: [
                 // AI助手头部
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    // 模式切换
-                    const AIAssistantModeSelector(),
                     // AI按钮
                     AIAssistantButton(
                       onTap: () {
