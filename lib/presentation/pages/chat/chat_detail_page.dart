@@ -206,13 +206,94 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
         ),
         title: Row(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
+            // 聊天红心按钮（未互点时显示，与话题助手对称）
+            Consumer(
+              builder: (context, ref, child) {
+                final isMutual = ref.watch(
+                  isMutualHeartProvider(widget.userId),
+                );
+                if (isMutual) {
+                  // 保持对称占位
+                  return const SizedBox(
+                    width: 44,
+                    height: 44,
+                  );
+                }
+
+                final hasActivated = ref.watch(
+                  hasChatRedHeartProvider(widget.userId),
+                );
+
+                return GestureDetector(
+                  onTap: () {
+                    ref
+                        .read(redHeartProvider.notifier)
+                        .toggleChatRedHeart(widget.userId);
+                  },
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppTheme.spaceMd,
+                      vertical: AppTheme.spaceSm,
+                    ),
+                    decoration: BoxDecoration(
+                      color: hasActivated
+                          ? const Color(0xFFFF6B9D).withOpacity(0.15)
+                          : AppTheme.surface,
+                      borderRadius: BorderRadius.circular(AppTheme.radiusFull),
+                      border: Border.all(
+                        color: hasActivated
+                            ? const Color(0xFFFF6B9D)
+                            : AppTheme.surfaceVariant,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 28,
+                          height: 28,
+                          decoration: BoxDecoration(
+                            color: hasActivated
+                                ? const Color(0xFFFF6B9D)
+                                : AppTheme.surfaceVariant,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            hasActivated
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                            color: hasActivated
+                                ? Colors.white
+                                : AppTheme.textTertiary,
+                            size: 16,
+                          ),
+                        ),
+                        const SizedBox(width: AppTheme.spaceSm),
+                        Text(
+                          hasActivated ? '已喜欢' : '喜欢',
+                          style: AppTheme.labelLarge.copyWith(
+                            color: hasActivated
+                                ? const Color(0xFFFF6B9D)
+                                : AppTheme.textSecondary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(width: AppTheme.spaceMd),
             // 头像（可点击查看资料）
             GestureDetector(
               onTap: _viewUserProfile,
               child: Container(
-                width: 36,
-                height: 36,
+                width: 48,
+                height: 48,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
@@ -232,7 +313,7 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
                     : Center(
                         child: Text(
                           widget.userName.substring(0, 1),
-                          style: AppTheme.titleMedium.copyWith(
+                          style: AppTheme.titleLarge.copyWith(
                             color: Colors.white,
                           ),
                         ),
@@ -240,91 +321,57 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
               ),
             ),
             const SizedBox(width: AppTheme.spaceSm),
-            // 用户名
-            Text(
-              widget.userName,
-              style: AppTheme.titleMedium.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            // 红心互点标记
-            Consumer(
-              builder: (context, ref, child) {
-                final isMutual = ref.watch(
-                  isMutualHeartProvider(widget.userId),
-                );
-                if (!isMutual) return const SizedBox.shrink();
-                return Padding(
-                  padding: const EdgeInsets.only(left: 8),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 6,
-                      vertical: 2,
-                    ),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [
-                          Color(0xFFE91E63),
-                          Color(0xFFFF6B9D),
-                        ],
+            // 用户名 + 红心徽章
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      widget.userName,
+                      style: AppTheme.titleLarge.copyWith(
+                        fontWeight: FontWeight.w600,
                       ),
-                      borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.favorite,
-                          size: 10,
-                          color: Colors.white,
-                        ),
-                        SizedBox(width: 2),
-                        Text(
-                          '红心',
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
+                    // 红心互点标记（仅爱心图标）
+                    Consumer(
+                      builder: (context, ref, child) {
+                        final isMutual = ref.watch(
+                          isMutualHeartProvider(widget.userId),
+                        );
+                        if (!isMutual) return const SizedBox.shrink();
+                        return Padding(
+                          padding: const EdgeInsets.only(left: 6),
+                          child: Container(
+                            padding: const EdgeInsets.all(5),
+                            decoration: const BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  Color(0xFFE91E63),
+                                  Color(0xFFFF6B9D),
+                                ],
+                              ),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.favorite,
+                              size: 12,
+                              color: Colors.white,
+                            ),
                           ),
-                        ),
-                      ],
+                        );
+                      },
                     ),
-                  ),
-                );
-              },
+                  ],
+                ),
+              ],
             ),
           ],
         ),
         centerTitle: true,
         actions: [
-          // 聊天红心按钮（未互点时显示）
-          Consumer(
-            builder: (context, ref, child) {
-              final isMutual = ref.watch(
-                isMutualHeartProvider(widget.userId),
-              );
-              if (isMutual) return const SizedBox.shrink();
-
-              final hasActivated = ref.watch(
-                hasChatRedHeartProvider(widget.userId),
-              );
-
-              return IconButton(
-                onPressed: () {
-                  ref
-                      .read(redHeartProvider.notifier)
-                      .toggleChatRedHeart(widget.userId);
-                },
-                icon: Icon(
-                  hasActivated ? Icons.favorite : Icons.favorite_border,
-                  color: hasActivated
-                      ? const Color(0xFFFF6B9D)
-                      : AppTheme.textPrimary,
-                ),
-                tooltip: hasActivated ? '取消红心' : '发送红心',
-              );
-            },
-          ),
           // 更多选项
           IconButton(
             onPressed: () {
