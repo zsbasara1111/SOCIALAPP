@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/router/app_router.dart';
 import '../../core/theme/app_theme.dart';
 import '../../presentation/providers/posts_provider.dart';
+import '../../presentation/providers/profile_stats_provider.dart';
 import '../../presentation/providers/vip_provider.dart';
 import '../../presentation/widgets/posts/post_card.dart';
 
@@ -21,7 +22,7 @@ class _MyProfilePageState extends ConsumerState<MyProfilePage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
   }
 
   @override
@@ -33,6 +34,7 @@ class _MyProfilePageState extends ConsumerState<MyProfilePage>
   @override
   Widget build(BuildContext context) {
     final isVip = ref.watch(isVipProvider);
+    final stats = ref.watch(profileStatsProvider);
 
     return Scaffold(
       backgroundColor: AppTheme.background,
@@ -190,22 +192,22 @@ class _MyProfilePageState extends ConsumerState<MyProfilePage>
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         _buildStatItem(
-                          value: '1.8w',
+                          value: formatCompactNumber(stats.likedUsersCount),
                           label: '喜欢的人',
                           onTap: () => context.goLikedUsers(),
                         ),
                         _buildStatItem(
-                          value: '1.5k',
+                          value: formatCompactNumber(stats.visitorsCount),
                           label: '看过我的人',
-                          hasDot: true,
+                          hasDot: stats.visitorsCount > 0,
                           onTap: () {
                             // TODO: 跳转到访客列表
                           },
                         ),
                         _buildStatItem(
-                          value: '1.9k',
+                          value: formatCompactNumber(stats.whoLikedMeCount),
                           label: '谁喜欢我',
-                          hasDot: true,
+                          hasDot: stats.whoLikedMeCount > 0,
                           isLocked: !isVip,
                           onTap: () {
                             if (!isVip) {
@@ -240,7 +242,6 @@ class _MyProfilePageState extends ConsumerState<MyProfilePage>
           controller: _tabController,
           children: [
             _buildMyPostsTab(),
-            _buildCollectedPostsTab(),
             _buildLikedPostsTab(),
           ],
         ),
@@ -443,9 +444,9 @@ class _MyProfilePageState extends ConsumerState<MyProfilePage>
   /// 构建"动态"标签页（我发过的动态）
   Widget _buildMyPostsTab() {
     final postsState = ref.watch(postsProvider);
-    // 模拟：当前用户发布的动态（这里用 mock 数据模拟自己发的）
+    // 只显示当前用户发布的动态
     final myPosts = postsState.posts
-        .where((p) => p.userId == 'user1' || p.userId == 'currentUser')
+        .where((p) => p.userId == 'currentUser')
         .toList();
 
     if (myPosts.isEmpty) {
@@ -465,12 +466,6 @@ class _MyProfilePageState extends ConsumerState<MyProfilePage>
         );
       },
     );
-  }
-
-  /// 构建"收藏"标签页
-  Widget _buildCollectedPostsTab() {
-    // TODO: 接入真实收藏数据
-    return _buildEmptyTab('还没有收藏过动态');
   }
 
   /// 构建"喜欢"标签页（我点赞过的动态）
@@ -596,7 +591,6 @@ class _TabBarDelegate extends SliverPersistentHeaderDelegate {
         ),
         tabs: const [
           Tab(text: '动态'),
-          Tab(text: '收藏'),
           Tab(text: '喜欢'),
         ],
       ),

@@ -211,8 +211,8 @@ class PostsNotifier extends StateNotifier<PostsState> {
     return [
       Post(
         id: '1',
-        userId: 'user1',
-        userNickname: '小橘子',
+        userId: 'currentUser',
+        userNickname: '我的昵称',
         content: '今天看完《三体》，被大刘的想象力震撼到了！黑暗森林法则真的很深刻，推荐给大家。',
         imageUrls: [],
         createdAt: DateTime.now().subtract(const Duration(minutes: 5)),
@@ -222,8 +222,8 @@ class PostsNotifier extends StateNotifier<PostsState> {
       ),
       Post(
         id: '2',
-        userId: 'user2',
-        userNickname: '音乐旅人',
+        userId: 'currentUser',
+        userNickname: '我的昵称',
         content: '周杰伦新专辑循环播放中，最喜欢《最伟大的作品》这首歌！',
         imageUrls: [],
         createdAt: DateTime.now().subtract(const Duration(hours: 1)),
