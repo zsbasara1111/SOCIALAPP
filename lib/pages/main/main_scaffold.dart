@@ -24,17 +24,23 @@ class MainScaffold extends StatelessWidget {
     );
   }
 
-  /// 底部导航栏
+  /// 底部导航栏 - Mindate 纯图标风格
   Widget _buildBottomNavBar(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppTheme.surface,
-        boxShadow: AppTheme.shadowSm,
+        color: AppTheme.surface.withOpacity(0.95),
+        boxShadow: [
+          BoxShadow(
+            color: AppTheme.primary.withOpacity(0.06),
+            blurRadius: 20,
+            offset: const Offset(0, -4),
+          ),
+        ],
       ),
       child: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(
-            horizontal: AppTheme.spaceLg,
+            horizontal: AppTheme.spaceXl,
             vertical: AppTheme.spaceSm,
           ),
           child: Row(
@@ -44,7 +50,6 @@ class MainScaffold extends StatelessWidget {
               _buildNavItem(
                 icon: Icons.people_outline,
                 activeIcon: Icons.people,
-                label: '匹配',
                 isActive: navigationShell.currentIndex == 0,
                 onTap: () => navigationShell.goBranch(0),
               ),
@@ -52,17 +57,15 @@ class MainScaffold extends StatelessWidget {
               _buildNavItem(
                 icon: Icons.explore_outlined,
                 activeIcon: Icons.explore,
-                label: '动态',
                 isActive: navigationShell.currentIndex == 1,
                 onTap: () => navigationShell.goBranch(1),
               ),
-              // 中间占位 (发布按钮)
-              const SizedBox(width: 64),
+              // 中间占位 (星球按钮)
+              const SizedBox(width: 56),
               // 消息
               _buildNavItem(
                 icon: Icons.chat_bubble_outline,
                 activeIcon: Icons.chat_bubble,
-                label: '消息',
                 isActive: navigationShell.currentIndex == 3,
                 badgeCount: 3,
                 onTap: () => navigationShell.goBranch(3),
@@ -71,7 +74,6 @@ class MainScaffold extends StatelessWidget {
               _buildNavItem(
                 icon: Icons.person_outline,
                 activeIcon: Icons.person,
-                label: '我的',
                 isActive: navigationShell.currentIndex == 4,
                 onTap: () => navigationShell.goBranch(4),
               ),
@@ -82,66 +84,62 @@ class MainScaffold extends StatelessWidget {
     );
   }
 
-  /// 导航项
+  /// 导航项 - 纯图标，无文字
   Widget _buildNavItem({
     required IconData icon,
     required IconData activeIcon,
-    required String label,
     required bool isActive,
     required VoidCallback onTap,
     int badgeCount = 0,
   }) {
     return GestureDetector(
       onTap: onTap,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Stack(
-            children: [
-              Icon(
-                isActive ? activeIcon : icon,
-                color: isActive ? AppTheme.primary : AppTheme.textTertiary,
-                size: 24,
-              ),
-              if (badgeCount > 0)
-                Positioned(
-                  right: -4,
-                  top: -4,
-                  child: Container(
-                    padding: const EdgeInsets.all(2),
-                    decoration: const BoxDecoration(
-                      color: AppTheme.error,
-                      shape: BoxShape.circle,
+      child: Container(
+        padding: const EdgeInsets.all(AppTheme.spaceSm),
+        decoration: isActive
+            ? BoxDecoration(
+                color: AppTheme.primary.withOpacity(0.1),
+                shape: BoxShape.circle,
+              )
+            : null,
+        child: Stack(
+          children: [
+            Icon(
+              isActive ? activeIcon : icon,
+              color: isActive ? AppTheme.primary : AppTheme.textTertiary,
+              size: 26,
+            ),
+            if (badgeCount > 0)
+              Positioned(
+                right: -4,
+                top: -4,
+                child: Container(
+                  padding: const EdgeInsets.all(2),
+                  decoration: const BoxDecoration(
+                    color: AppTheme.error,
+                    shape: BoxShape.circle,
+                  ),
+                  constraints: const BoxConstraints(
+                    minWidth: 16,
+                    minHeight: 16,
+                  ),
+                  child: Text(
+                    badgeCount > 99 ? '99+' : '$badgeCount',
+                    style: AppTheme.labelSmall.copyWith(
+                      color: Colors.white,
+                      fontSize: 9,
                     ),
-                    constraints: const BoxConstraints(
-                      minWidth: 16,
-                      minHeight: 16,
-                    ),
-                    child: Text(
-                      badgeCount > 99 ? '99+' : '$badgeCount',
-                      style: AppTheme.labelSmall.copyWith(
-                        color: Colors.white,
-                        fontSize: 9,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
+                    textAlign: TextAlign.center,
                   ),
                 ),
-            ],
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: AppTheme.labelSmall.copyWith(
-              color: isActive ? AppTheme.primary : AppTheme.textTertiary,
-            ),
-          ),
-        ],
+              ),
+          ],
+        ),
       ),
     );
   }
 
-  /// 爱好库入口按钮（替换原来的发布按钮）
+  /// 爱好库入口按钮
   Widget _buildFab(BuildContext context) {
     return PlanetOrbitButton(
       onTap: () => context.push(RoutePaths.hobbyLibrary),

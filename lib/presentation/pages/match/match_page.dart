@@ -4,12 +4,10 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/router/app_router.dart';
 import '../../providers/match_provider.dart';
 import 'package:go_router/go_router.dart';
-import '../../widgets/match/match_mode_selector.dart';
 import '../../widgets/match/match_card.dart';
 import '../../widgets/match/match_success_dialog.dart';
-import '../../widgets/match/match_quota_indicator.dart';
 
-/// 匹配页面 - 首页
+/// 匹配页面 - Mindate 清新风格
 class MatchPage extends ConsumerStatefulWidget {
   const MatchPage({super.key});
 
@@ -18,13 +16,11 @@ class MatchPage extends ConsumerStatefulWidget {
 }
 
 class _MatchPageState extends ConsumerState<MatchPage> {
-  // 当前卡片滑动进度，-1 表示左滑（不喜欢），1 表示右滑（喜欢）
   double _swipeProgress = 0;
 
   @override
   void initState() {
     super.initState();
-    // 初始加载用户
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(matchProvider.notifier).loadNextUser();
     });
@@ -60,55 +56,44 @@ class _MatchPageState extends ConsumerState<MatchPage> {
     return Scaffold(
       backgroundColor: AppTheme.background,
       body: SafeArea(
-        child: Stack(
+        child: Column(
           children: [
-            Column(
-              children: [
-                // 顶部导航
-                _buildAppBar(context, matchState),
+            // 顶部导航
+            _buildAppBar(context, matchState),
 
-                // 匹配模式选择器
-                const MatchModeSelector(),
-
-                const SizedBox(height: AppTheme.spaceMd),
-
-                // 匹配次数指示器
-                const MatchQuotaIndicator(),
-
-                // 匹配卡片区域
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppTheme.spaceLg,
-                      vertical: AppTheme.spaceMd,
-                    ),
-                    child: matchState.isLoading
-                        ? _buildLoadingCard()
-                        : currentUser != null
-                            ? MatchCard(
-                                user: currentUser,
-                                onDislike: () {
-                                  ref.read(matchProvider.notifier).dislikeUser(currentUser.id);
-                                },
-                                onLike: () {
-                                  ref.read(matchProvider.notifier).likeUser(currentUser.id);
-                                },
-                                onSwipeProgress: (progress) {
-                                  setState(() {
-                                    _swipeProgress = progress;
-                                  });
-                                },
-                              )
-                            : _buildEmptyCard(),
-                  ),
+            // 匹配卡片区域（占据大部分空间）
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppTheme.spaceLg,
+                  vertical: AppTheme.spaceMd,
                 ),
-
-                // 底部操作按钮
-                if (!matchState.isLoading && currentUser != null)
-                  _buildActionButtons(context, currentUser.id),
-              ],
+                child: matchState.isLoading
+                    ? _buildLoadingCard()
+                    : currentUser != null
+                        ? MatchCard(
+                            user: currentUser,
+                            onDislike: () {
+                              ref.read(matchProvider.notifier).dislikeUser(currentUser.id);
+                            },
+                            onLike: () {
+                              ref.read(matchProvider.notifier).likeUser(currentUser.id);
+                            },
+                            onSwipeProgress: (progress) {
+                              setState(() {
+                                _swipeProgress = progress;
+                              });
+                            },
+                          )
+                        : _buildEmptyCard(),
+              ),
             ),
 
+            // 底部操作按钮
+            if (!matchState.isLoading && currentUser != null)
+              _buildActionButtons(context, currentUser.id),
+
+            const SizedBox(height: AppTheme.spaceLg),
           ],
         ),
       ),
@@ -152,7 +137,7 @@ class _MatchPageState extends ConsumerState<MatchPage> {
             ],
           ),
 
-          // 筛选按钮（仅在精准模式显示）
+          // 筛选按钮
           if (matchState.currentMode == MatchMode.precise)
             IconButton(
               onPressed: () {
@@ -231,26 +216,28 @@ class _MatchPageState extends ConsumerState<MatchPage> {
   /// 构建操作按钮
   Widget _buildActionButtons(BuildContext context, String userId) {
     return Padding(
-      padding: const EdgeInsets.all(AppTheme.spaceLg),
+      padding: const EdgeInsets.symmetric(horizontal: AppTheme.spaceXl),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           // 不喜欢按钮
           _buildActionButton(
             icon: Icons.close,
-            color: const Color(0xFFEF4444),
+            color: const Color(0xFFFF6B6B),
+            bgColor: const Color(0xFFFFEAEA),
             isHighlighted: _swipeProgress < 0,
             onTap: () {
               ref.read(matchProvider.notifier).dislikeUser(userId);
             },
           ),
 
-          const SizedBox(width: AppTheme.spaceXl),
+          const SizedBox(width: AppTheme.space2Xl),
 
           // 喜欢按钮
           _buildActionButton(
             icon: Icons.favorite,
-            color: const Color(0xFFEF4444),
+            color: const Color(0xFF4ADE80),
+            bgColor: const Color(0xFFE8FCEF),
             isHighlighted: _swipeProgress > 0,
             onTap: () {
               ref.read(matchProvider.notifier).likeUser(userId);
@@ -265,6 +252,7 @@ class _MatchPageState extends ConsumerState<MatchPage> {
   Widget _buildActionButton({
     required IconData icon,
     required Color color,
+    required Color bgColor,
     required VoidCallback onTap,
     bool isHighlighted = false,
     double size = 64,
@@ -278,11 +266,11 @@ class _MatchPageState extends ConsumerState<MatchPage> {
         width: size * scale,
         height: size * scale,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: bgColor,
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: color.withOpacity(isHighlighted ? 0.6 : 0.3),
+              color: color.withOpacity(isHighlighted ? 0.4 : 0.2),
               blurRadius: isHighlighted ? 20 : 12,
               spreadRadius: isHighlighted ? 4 : 0,
               offset: const Offset(0, 4),

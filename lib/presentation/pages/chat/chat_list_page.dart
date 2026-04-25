@@ -6,7 +6,7 @@ import '../../providers/hobby_provider.dart';
 import '../../providers/red_heart_provider.dart';
 import 'chat_detail_page.dart';
 
-/// 聊天列表页面
+/// 聊天列表页面 - Mindate 清新风格
 class ChatListPage extends ConsumerWidget {
   const ChatListPage({super.key});
 
@@ -73,7 +73,6 @@ class ChatListPage extends ConsumerWidget {
             SliverList(
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
-                  // 模拟数据（每个人的爱好不同）
                   final chats = [
                     _ChatData(
                       id: '1',
@@ -242,7 +241,7 @@ class ChatListPage extends ConsumerWidget {
                     width: 14,
                     height: 14,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF22C55E),
+                      color: const Color(0xFF4ADE80),
                       shape: BoxShape.circle,
                       border: Border.all(
                         color: AppTheme.surface,
@@ -272,7 +271,7 @@ class ChatListPage extends ConsumerWidget {
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          // 红心互点标记（仅爱心图标）
+                          // 红心互点标记
                           Consumer(
                             builder: (context, ref, child) {
                               final isMutual = ref.watch(
@@ -286,8 +285,8 @@ class ChatListPage extends ConsumerWidget {
                                   decoration: const BoxDecoration(
                                     gradient: LinearGradient(
                                       colors: [
-                                        Color(0xFFE91E63),
-                                        Color(0xFFFF6B9D),
+                                        Color(0xFFFF6B6B),
+                                        Color(0xFFFF8E8E),
                                       ],
                                     ),
                                     shape: BoxShape.circle,

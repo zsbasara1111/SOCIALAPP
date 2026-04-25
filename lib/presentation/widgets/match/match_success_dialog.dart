@@ -3,7 +3,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/app_image.dart';
 import '../../providers/match_provider.dart';
 
-/// 匹配成功弹窗
+/// 匹配成功弹窗 - Mindate 双卡片倾斜风格
 class MatchSuccessDialog extends StatelessWidget {
   final MatchUser matchedUser;
   final VoidCallback onClose;
@@ -23,19 +23,9 @@ class MatchSuccessDialog extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(AppTheme.spaceXl),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFFFF6B4A), Color(0xFFFF8F73)],
-          ),
+          color: AppTheme.surface,
           borderRadius: BorderRadius.circular(AppTheme.radiusXl),
-          boxShadow: [
-            BoxShadow(
-              color: AppTheme.primary.withOpacity(0.4),
-              blurRadius: 30,
-              offset: const Offset(0, 10),
-            ),
-          ],
+          boxShadow: AppTheme.shadowXl,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -45,87 +35,77 @@ class MatchSuccessDialog extends StatelessWidget {
               '匹配成功！',
               style: TextStyle(
                 fontFamily: AppTheme.fontFamilyDisplay,
-                fontSize: 32,
+                fontSize: 28,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: AppTheme.primary,
               ),
             ),
 
             const SizedBox(height: AppTheme.spaceLg),
 
-            // 用户头像
-            Container(
-              width: 100,
-              height: 100,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: Colors.white,
-                  width: 4,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    blurRadius: 10,
+            // 双卡片展示
+            SizedBox(
+              height: 160,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  // 左侧卡片（当前用户 - 模拟）
+                  Positioned(
+                    left: 20,
+                    child: Transform.rotate(
+                      angle: -0.26, // -15度
+                      child: _buildMiniCard(
+                        avatarUrl: 'assets/images/avatars/male_01.jpg',
+                        name: '我',
+                      ),
+                    ),
+                  ),
+                  // 右侧卡片（匹配用户）
+                  Positioned(
+                    right: 20,
+                    child: Transform.rotate(
+                      angle: 0.26, // +15度
+                      child: _buildMiniCard(
+                        avatarUrl: matchedUser.avatarUrl,
+                        name: matchedUser.nickname,
+                      ),
+                    ),
+                  ),
+                  // 中心红心
+                  Container(
+                    width: 56,
+                    height: 56,
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFFFF6B6B), Color(0xFFFF8E8E)],
+                      ),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFFFF6B6B).withOpacity(0.4),
+                          blurRadius: 16,
+                          spreadRadius: 4,
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.favorite,
+                      color: Colors.white,
+                      size: 28,
+                    ),
                   ),
                 ],
               ),
-              child: matchedUser.avatarUrl != null
-                  ? ClipOval(
-                      child: AppImage(
-                        imagePath: matchedUser.avatarUrl!,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => const Icon(
-                          Icons.person,
-                          size: 50,
-                          color: AppTheme.primary,
-                        ),
-                      ),
-                    )
-                  : const Icon(
-                      Icons.person,
-                      size: 50,
-                      color: AppTheme.primary,
-                    ),
             ),
 
-            const SizedBox(height: AppTheme.spaceMd),
-
-            // 用户名
-            Text(
-              matchedUser.nickname,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-
-            const SizedBox(height: 4),
-
-            // 年龄和城市
-            if (matchedUser.age != null || matchedUser.city != null)
-              Text(
-                [
-                  if (matchedUser.age != null) '${matchedUser.age}岁',
-                  if (matchedUser.city != null) matchedUser.city!,
-                ].join(' · '),
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.white.withOpacity(0.8),
-                ),
-              ),
-
-            const SizedBox(height: AppTheme.spaceXl),
+            const SizedBox(height: AppTheme.spaceLg),
 
             // 提示文字
             Text(
               '你们都喜欢相同的作品，\n开始聊天吧！',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.white.withOpacity(0.9),
+              style: AppTheme.bodyMedium.copyWith(
+                color: AppTheme.textSecondary,
                 height: 1.6,
               ),
             ),
@@ -140,8 +120,8 @@ class MatchSuccessDialog extends StatelessWidget {
                   child: OutlinedButton(
                     onPressed: onClose,
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      side: const BorderSide(color: Colors.white),
+                      foregroundColor: AppTheme.textSecondary,
+                      side: BorderSide(color: AppTheme.textTertiary.withOpacity(0.5)),
                       padding: const EdgeInsets.symmetric(
                         vertical: AppTheme.spaceMd,
                       ),
@@ -160,8 +140,8 @@ class MatchSuccessDialog extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: onChat,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: AppTheme.primary,
+                      backgroundColor: AppTheme.primary,
+                      foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(
                         vertical: AppTheme.spaceMd,
                       ),
@@ -177,6 +157,71 @@ class MatchSuccessDialog extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  /// 构建小卡片
+  Widget _buildMiniCard({
+    required String? avatarUrl,
+    required String name,
+  }) {
+    return Container(
+      width: 100,
+      height: 130,
+      decoration: BoxDecoration(
+        color: AppTheme.surface,
+        borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+        boxShadow: AppTheme.shadowMd,
+        border: Border.all(
+          color: AppTheme.surfaceVariant,
+          width: 2,
+        ),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 64,
+            height: 64,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  AppTheme.primary.withOpacity(0.8),
+                  AppTheme.accent.withOpacity(0.8),
+                ],
+              ),
+              shape: BoxShape.circle,
+            ),
+            child: avatarUrl != null
+                ? ClipOval(
+                    child: AppImage(
+                      imagePath: avatarUrl,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => const Icon(
+                        Icons.person,
+                        color: Colors.white,
+                        size: 32,
+                      ),
+                    ),
+                  )
+                : const Icon(
+                    Icons.person,
+                    color: Colors.white,
+                    size: 32,
+                  ),
+          ),
+          const SizedBox(height: AppTheme.spaceSm),
+          Text(
+            name,
+            style: AppTheme.labelMedium.copyWith(
+              color: AppTheme.textPrimary,
+              fontWeight: FontWeight.w600,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
       ),
     );
   }

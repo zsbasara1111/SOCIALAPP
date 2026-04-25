@@ -66,14 +66,14 @@ class _PlanetOrbitButtonState extends State<PlanetOrbitButton>
         height: widget.size,
         decoration: BoxDecoration(
           gradient: const LinearGradient(
-            colors: [Color(0xFFFF8C42), Color(0xFFFF6B6B)],
+            colors: [Color(0xFF4A90E2), Color(0xFF7AB8F0)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFFFF8C42).withOpacity(0.4),
+              color: const Color(0xFF4A90E2).withOpacity(0.4),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -167,6 +167,9 @@ class _PlanetOrbitPainter extends CustomPainter {
     }
   }
 
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+
   /// 绘制虚线轨道
   void _drawDashedOrbit(Canvas canvas, Offset center, _OrbitConfig orbit) {
     final paint = Paint()
@@ -191,12 +194,12 @@ class _PlanetOrbitPainter extends CustomPainter {
 
   /// 绘制中心星球
   void _drawPlanet(Canvas canvas, Offset center, double radius) {
-    // 星球底色
+    // 星球底色（蓝色系）
     final planetPaint = Paint()
       ..shader = RadialGradient(
         colors: [
-          const Color(0xFFFFE4D6),
-          const Color(0xFFFFB088),
+          const Color(0xFFD6E8FF),
+          const Color(0xFF88B8F0),
         ],
         stops: const [0.2, 1.0],
         center: Alignment(
@@ -211,7 +214,7 @@ class _PlanetOrbitPainter extends CustomPainter {
 
     // 星球高光
     final highlightPaint = Paint()
-      ..color = Colors.white.withOpacity(0.25)
+      ..color = Colors.white.withOpacity(0.3)
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4);
     canvas.drawCircle(
       center - Offset(radius * 0.3, radius * 0.3),
@@ -221,7 +224,7 @@ class _PlanetOrbitPainter extends CustomPainter {
 
     // 星球轮廓
     final borderPaint = Paint()
-      ..color = Colors.white.withOpacity(0.4)
+      ..color = Colors.white.withOpacity(0.5)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.5;
     canvas.drawCircle(center, radius, borderPaint);
@@ -241,7 +244,7 @@ class _PlanetOrbitPainter extends CustomPainter {
 
     // 元素边框
     final borderPaint = Paint()
-      ..color = const Color(0xFFFF8C42).withOpacity(0.5)
+      ..color = const Color(0xFF4A90E2).withOpacity(0.5)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1;
     canvas.drawCircle(pos, orbit.dotRadius, borderPaint);
@@ -262,8 +265,6 @@ class _PlanetOrbitPainter extends CustomPainter {
     );
   }
 
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
 
 /// 轨道配置
