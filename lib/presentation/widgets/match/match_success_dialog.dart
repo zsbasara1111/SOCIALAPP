@@ -70,11 +70,23 @@ class MatchSuccessDialog extends StatelessWidget {
                   ),
                 ],
               ),
-              child: const Icon(
-                Icons.person,
-                size: 50,
-                color: AppTheme.primary,
-              ),
+              child: matchedUser.avatarUrl != null
+                  ? ClipOval(
+                      child: Image.network(
+                        matchedUser.avatarUrl!,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => const Icon(
+                          Icons.person,
+                          size: 50,
+                          color: AppTheme.primary,
+                        ),
+                      ),
+                    )
+                  : const Icon(
+                      Icons.person,
+                      size: 50,
+                      color: AppTheme.primary,
+                    ),
             ),
 
             const SizedBox(height: AppTheme.spaceMd),

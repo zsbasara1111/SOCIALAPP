@@ -277,33 +277,16 @@ class _MatchCardState extends State<MatchCard> {
 
   /// 构建照片区域
   Widget _buildPhotoArea() {
-    // 如果没有照片，显示占位图
+    // 如果没有照片但有头像，显示头像
     if (widget.user.photoUrls.isEmpty) {
-      return Container(
-        width: double.infinity,
-        height: double.infinity,
-        color: AppTheme.surfaceVariant,
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                width: 100,
-                height: 100,
-                decoration: BoxDecoration(
-                  color: AppTheme.primary.withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.person,
-                  size: 50,
-                  color: AppTheme.primary.withOpacity(0.5),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
+      if (widget.user.avatarUrl != null) {
+        return Image.network(
+          widget.user.avatarUrl!,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) => _buildPhotoPlaceholder(),
+        );
+      }
+      return _buildPhotoPlaceholder();
     }
 
     // 有照片时显示照片
@@ -333,6 +316,35 @@ class _MatchCardState extends State<MatchCard> {
           },
         );
       },
+    );
+  }
+
+  /// 构建照片占位图
+  Widget _buildPhotoPlaceholder() {
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      color: AppTheme.surfaceVariant,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 100,
+              height: 100,
+              decoration: BoxDecoration(
+                color: AppTheme.primary.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.person,
+                size: 50,
+                color: AppTheme.primary.withOpacity(0.5),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
