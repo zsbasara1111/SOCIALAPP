@@ -22,8 +22,8 @@ class AppTheme {
   static const Color secondary = Color(0xFF6B8FA8);
   static const Color accent = Color(0xFF50C8D8);
 
-  // 背景 - 清新白/浅蓝
-  static const Color background = Color(0xFFF0F7FF);
+  // 背景 - 纯白色
+  static const Color background = Color(0xFFFFFFFF);
   static const Color surface = Color(0xFFFFFFFF);
   static const Color surfaceVariant = Color(0xFFE8F1FA);
 
