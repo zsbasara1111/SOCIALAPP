@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/app_image.dart';
 import '../../../data/services/ai_service.dart';
 import '../../providers/ai_assistant_provider.dart';
 import '../../providers/hobby_provider.dart';
@@ -226,8 +227,8 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
                 ),
                 child: widget.avatar != null
                     ? ClipOval(
-                        child: Image.network(
-                          widget.avatar!,
+                        child: AppImage(
+                          imagePath: widget.avatar!,
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) => Center(
                             child: Text(

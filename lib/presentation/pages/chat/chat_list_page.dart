@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/app_image.dart';
 import '../../providers/hobby_provider.dart';
 import '../../providers/red_heart_provider.dart';
 import 'chat_detail_page.dart';
@@ -80,7 +81,7 @@ class ChatListPage extends ConsumerWidget {
                       message: '你好呀～看到你的资料觉得很有缘！',
                       time: '10:30',
                       unreadCount: 3,
-                      avatar: 'https://randomuser.me/api/portraits/women/3.jpg',
+                      avatar: 'assets/images/avatars/female_02.jpg',
                       age: 24,
                       city: '上海',
                       bio: '喜欢阅读和旅行，享受安静的午后时光',
@@ -96,7 +97,7 @@ class ChatListPage extends ConsumerWidget {
                       message: '那张照片是在哪里拍的？风景真美',
                       time: '昨天',
                       unreadCount: 0,
-                      avatar: 'https://randomuser.me/api/portraits/men/5.jpg',
+                      avatar: 'assets/images/avatars/male_01.jpg',
                       age: 26,
                       city: '北京',
                       bio: '用脚步丈量世界，用镜头记录风景',
@@ -112,7 +113,7 @@ class ChatListPage extends ConsumerWidget {
                       message: '推荐你去试试那家新开的日料店！',
                       time: '昨天',
                       unreadCount: 1,
-                      avatar: 'https://randomuser.me/api/portraits/women/5.jpg',
+                      avatar: 'assets/images/avatars/female_05.jpg',
                       age: 25,
                       city: '广州',
                       bio: '人生苦短，唯有美食不可辜负',
@@ -128,7 +129,7 @@ class ChatListPage extends ConsumerWidget {
                       message: '可以交流一下摄影技巧～',
                       time: '周一',
                       unreadCount: 0,
-                      avatar: 'https://randomuser.me/api/portraits/men/6.jpg',
+                      avatar: 'assets/images/avatars/male_06.jpg',
                       age: 23,
                       city: '杭州',
                       bio: '摄影是光的绘画',
@@ -210,8 +211,8 @@ class ChatListPage extends ConsumerWidget {
                   ),
                   child: chat.avatar != null
                       ? ClipOval(
-                          child: Image.network(
-                            chat.avatar!,
+                          child: AppImage(
+                            imagePath: chat.avatar!,
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) =>
                                 Center(

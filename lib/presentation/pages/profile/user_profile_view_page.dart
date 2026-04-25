@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/app_image.dart';
 import '../../../data/models/hobby_category.dart';
 import '../../providers/hobby_provider.dart';
 import '../../providers/user_interactions_provider.dart';
@@ -153,8 +154,8 @@ class _UserProfileViewPageState extends ConsumerState<UserProfileViewPage> {
             ),
             child: widget.avatar != null
                 ? ClipOval(
-                    child: Image.network(
-                      widget.avatar!,
+                    child: AppImage(
+                      imagePath: widget.avatar!,
                       fit: BoxFit.cover,
                     ),
                   )

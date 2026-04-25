@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/app_image.dart';
 import '../../providers/user_interactions_provider.dart';
 
 /// 谁喜欢我页面
@@ -94,8 +95,8 @@ class WhoLikedMePage extends ConsumerWidget {
             ),
             child: user.avatarUrl != null
                 ? ClipOval(
-                    child: Image.network(
-                      user.avatarUrl!,
+                    child: AppImage(
+                      imagePath: user.avatarUrl!,
                       fit: BoxFit.cover,
                     ),
                   )

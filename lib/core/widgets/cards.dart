@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
+import 'app_image.dart';
 
 /// 匹配卡片 - 核心组件
 class MatchCard extends StatelessWidget {
@@ -55,8 +56,8 @@ class MatchCard extends StatelessWidget {
                 child: Container(
                   color: AppTheme.surfaceVariant,
                   child: photoUrl != null
-                      ? Image.network(
-                          photoUrl!,
+                      ? AppImage(
+                          imagePath: photoUrl!,
                           fit: BoxFit.cover,
                         )
                       : const Center(
@@ -365,8 +366,8 @@ class PostCard extends StatelessWidget {
     if (images.length == 1) {
       return AspectRatio(
         aspectRatio: 1,
-        child: Image.network(
-          images[0],
+        child: AppImage(
+          imagePath: images[0],
           fit: BoxFit.cover,
         ),
       );
@@ -376,7 +377,7 @@ class PostCard extends StatelessWidget {
           return Expanded(
             child: AspectRatio(
               aspectRatio: 1,
-              child: Image.network(url, fit: BoxFit.cover),
+              child: AppImage(imagePath: url, fit: BoxFit.cover),
             ),
           );
         }).toList(),
@@ -388,14 +389,14 @@ class PostCard extends StatelessWidget {
             flex: 2,
             child: AspectRatio(
               aspectRatio: 1,
-              child: Image.network(images[0], fit: BoxFit.cover),
+              child: AppImage(imagePath: images[0], fit: BoxFit.cover),
             ),
           ),
           Expanded(
             child: Column(
               children: images.sublist(1).map((url) {
                 return Expanded(
-                  child: Image.network(url, fit: BoxFit.cover),
+                  child: AppImage(imagePath: url, fit: BoxFit.cover),
                 );
               }).toList(),
             ),
@@ -410,7 +411,7 @@ class PostCard extends StatelessWidget {
         mainAxisSpacing: 2,
         crossAxisSpacing: 2,
         children: images.take(9).map((url) {
-          return Image.network(url, fit: BoxFit.cover);
+          return AppImage(imagePath: url, fit: BoxFit.cover);
         }).toList(),
       );
     }

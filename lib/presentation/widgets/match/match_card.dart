@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/app_image.dart';
 import '../../providers/match_provider.dart';
 
 /// 匹配卡片组件
@@ -280,8 +281,8 @@ class _MatchCardState extends State<MatchCard> {
     // 如果没有照片但有头像，显示头像
     if (widget.user.photoUrls.isEmpty) {
       if (widget.user.avatarUrl != null) {
-        return Image.network(
-          widget.user.avatarUrl!,
+        return AppImage(
+          imagePath: widget.user.avatarUrl!,
           fit: BoxFit.cover,
           errorBuilder: (context, error, stackTrace) => _buildPhotoPlaceholder(),
         );
@@ -293,8 +294,8 @@ class _MatchCardState extends State<MatchCard> {
     return PageView.builder(
       itemCount: widget.user.photoUrls.length,
       itemBuilder: (context, index) {
-        return Image.network(
-          widget.user.photoUrls[index],
+        return AppImage(
+          imagePath: widget.user.photoUrls[index],
           fit: BoxFit.cover,
           loadingBuilder: (context, child, loadingProgress) {
             if (loadingProgress == null) return child;

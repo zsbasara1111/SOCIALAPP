@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/router/app_router.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/widgets/app_image.dart';
 import '../../presentation/providers/posts_provider.dart';
 import '../../presentation/providers/profile_stats_provider.dart';
 import '../../presentation/providers/vip_provider.dart';
@@ -97,8 +98,8 @@ class _MyProfilePageState extends ConsumerState<MyProfilePage>
                               shape: BoxShape.circle,
                             ),
                             child: ClipOval(
-                              child: Image.network(
-                                'https://randomuser.me/api/portraits/men/8.jpg',
+                              child: AppImage(
+                                imagePath: 'assets/images/avatars/male_05.jpg',
                                 fit: BoxFit.cover,
                                 errorBuilder: (context, error, stackTrace) =>
                                     const Icon(

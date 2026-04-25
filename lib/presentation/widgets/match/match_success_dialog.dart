@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/app_image.dart';
 import '../../providers/match_provider.dart';
 
 /// 匹配成功弹窗
@@ -72,8 +73,8 @@ class MatchSuccessDialog extends StatelessWidget {
               ),
               child: matchedUser.avatarUrl != null
                   ? ClipOval(
-                      child: Image.network(
-                        matchedUser.avatarUrl!,
+                      child: AppImage(
+                        imagePath: matchedUser.avatarUrl!,
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) => const Icon(
                           Icons.person,

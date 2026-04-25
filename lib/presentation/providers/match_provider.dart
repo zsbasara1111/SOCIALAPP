@@ -339,13 +339,13 @@ class MatchNotifier extends StateNotifier<MatchState> {
       MatchUser(
         id: '1',
         nickname: '小橘子',
-        avatarUrl: 'https://randomuser.me/api/portraits/women/1.jpg',
+        avatarUrl: 'assets/images/avatars/female_01.jpg',
         age: 24,
         city: '上海',
         bio: '喜欢阅读、旅行，寻找志同道合的朋友',
         photoUrls: [
-          'https://randomuser.me/api/portraits/women/1.jpg',
-          'https://randomuser.me/api/portraits/women/2.jpg',
+          'assets/images/avatars/female_01.jpg',
+          'assets/images/photos/photo_01.jpg',
         ],
         hobbies: [
           UserHobbyItem(categoryId: 'books', itemName: '《三体》'),
@@ -356,13 +356,13 @@ class MatchNotifier extends StateNotifier<MatchState> {
       MatchUser(
         id: '2',
         nickname: '小雨',
-        avatarUrl: 'https://randomuser.me/api/portraits/women/3.jpg',
+        avatarUrl: 'assets/images/avatars/female_02.jpg',
         age: 23,
         city: '杭州',
         bio: '摄影师，用镜头记录生活中的美好瞬间',
         photoUrls: [
-          'https://randomuser.me/api/portraits/women/3.jpg',
-          'https://randomuser.me/api/portraits/women/4.jpg',
+          'assets/images/avatars/female_02.jpg',
+          'assets/images/photos/photo_02.jpg',
         ],
         hobbies: [
           UserHobbyItem(categoryId: 'photography', itemName: '人像摄影'),
@@ -373,13 +373,13 @@ class MatchNotifier extends StateNotifier<MatchState> {
       MatchUser(
         id: '3',
         nickname: '林夕',
-        avatarUrl: 'https://randomuser.me/api/portraits/women/5.jpg',
+        avatarUrl: 'assets/images/avatars/female_03.jpg',
         age: 25,
         city: '成都',
         bio: '美食探店达人，咖啡重度爱好者',
         photoUrls: [
-          'https://randomuser.me/api/portraits/women/5.jpg',
-          'https://randomuser.me/api/portraits/women/6.jpg',
+          'assets/images/avatars/female_03.jpg',
+          'assets/images/photos/photo_03.jpg',
         ],
         hobbies: [
           UserHobbyItem(categoryId: 'food', itemName: '咖啡'),
@@ -390,13 +390,13 @@ class MatchNotifier extends StateNotifier<MatchState> {
       MatchUser(
         id: '4',
         nickname: '安娜',
-        avatarUrl: 'https://randomuser.me/api/portraits/women/7.jpg',
+        avatarUrl: 'assets/images/avatars/female_04.jpg',
         age: 26,
         city: '广州',
         bio: '瑜伽老师，喜欢运动和音乐',
         photoUrls: [
-          'https://randomuser.me/api/portraits/women/7.jpg',
-          'https://randomuser.me/api/portraits/women/8.jpg',
+          'assets/images/avatars/female_04.jpg',
+          'assets/images/photos/photo_04.jpg',
         ],
         hobbies: [
           UserHobbyItem(categoryId: 'sports', itemName: '瑜伽'),
@@ -408,13 +408,13 @@ class MatchNotifier extends StateNotifier<MatchState> {
       MatchUser(
         id: '5',
         nickname: '音乐旅人',
-        avatarUrl: 'https://randomuser.me/api/portraits/men/1.jpg',
+        avatarUrl: 'assets/images/avatars/male_01.jpg',
         age: 26,
         city: '北京',
         bio: '音乐是生活的调味剂，吉他手',
         photoUrls: [
-          'https://randomuser.me/api/portraits/men/1.jpg',
-          'https://randomuser.me/api/portraits/men/2.jpg',
+          'assets/images/avatars/male_01.jpg',
+          'assets/images/photos/photo_05.jpg',
         ],
         hobbies: [
           UserHobbyItem(categoryId: 'music', itemName: '吉他'),
@@ -425,13 +425,13 @@ class MatchNotifier extends StateNotifier<MatchState> {
       MatchUser(
         id: '6',
         nickname: '阿杰',
-        avatarUrl: 'https://randomuser.me/api/portraits/men/3.jpg',
+        avatarUrl: 'assets/images/avatars/male_02.jpg',
         age: 28,
         city: '深圳',
         bio: '程序员，摄影爱好者，周末经常出门拍照',
         photoUrls: [
-          'https://randomuser.me/api/portraits/men/3.jpg',
-          'https://randomuser.me/api/portraits/men/4.jpg',
+          'assets/images/avatars/male_02.jpg',
+          'assets/images/photos/photo_06.jpg',
         ],
         hobbies: [
           UserHobbyItem(categoryId: 'photography', itemName: '风光摄影'),
@@ -442,13 +442,13 @@ class MatchNotifier extends StateNotifier<MatchState> {
       MatchUser(
         id: '7',
         nickname: '浩然',
-        avatarUrl: 'https://randomuser.me/api/portraits/women/1.jpg3',
+        avatarUrl: 'assets/images/avatars/male_03.jpg',
         age: 27,
         city: '北京',
         bio: '运动达人，喜欢篮球和健身',
         photoUrls: [
-          'https://randomuser.me/api/portraits/women/1.jpg3',
-          'https://randomuser.me/api/portraits/women/1.jpg4',
+          'assets/images/avatars/male_03.jpg',
+          'assets/images/photos/photo_07.jpg',
         ],
         hobbies: [
           UserHobbyItem(categoryId: 'sports', itemName: '篮球'),
@@ -459,13 +459,13 @@ class MatchNotifier extends StateNotifier<MatchState> {
       MatchUser(
         id: '8',
         nickname: '子轩',
-        avatarUrl: 'https://randomuser.me/api/portraits/women/2.jpg0',
+        avatarUrl: 'assets/images/avatars/male_04.jpg',
         age: 25,
         city: '上海',
         bio: '电影爱好者，喜欢诺兰和宫崎骏',
         photoUrls: [
-          'https://randomuser.me/api/portraits/women/2.jpg0',
-          'https://randomuser.me/api/portraits/women/2.jpg1',
+          'assets/images/avatars/male_04.jpg',
+          'assets/images/photos/photo_08.jpg',
         ],
         hobbies: [
           UserHobbyItem(categoryId: 'movies', itemName: '诺兰'),

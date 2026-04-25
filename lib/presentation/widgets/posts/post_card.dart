@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/app_image.dart';
 import '../../providers/posts_provider.dart';
 
 /// 动态卡片组件
@@ -81,8 +82,8 @@ class PostCard extends StatelessWidget {
           ),
           child: post.userAvatar != null
               ? ClipOval(
-                  child: Image.network(
-                    post.userAvatar!,
+                  child: AppImage(
+                    imagePath: post.userAvatar!,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) =>
                         const Icon(
@@ -153,8 +154,8 @@ class PostCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppTheme.radiusLg),
         child: AspectRatio(
           aspectRatio: 16 / 9,
-          child: Image.network(
-            post.imageUrls[0],
+          child: AppImage(
+            imagePath: post.imageUrls[0],
             fit: BoxFit.cover,
           ),
         ),
@@ -174,8 +175,8 @@ class PostCard extends StatelessWidget {
       itemBuilder: (context, index) {
         return ClipRRect(
           borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-          child: Image.network(
-            post.imageUrls[index],
+          child: AppImage(
+            imagePath: post.imageUrls[index],
             fit: BoxFit.cover,
           ),
         );

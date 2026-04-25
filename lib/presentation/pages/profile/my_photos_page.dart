@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/app_image.dart';
 
 /// 我的照片墙页面
 class MyPhotosPage extends StatelessWidget {
@@ -50,8 +51,8 @@ class MyPhotosPage extends StatelessWidget {
               itemBuilder: (context, index) {
                 return ClipRRect(
                   borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-                  child: Image.network(
-                    photos[index],
+                  child: AppImage(
+                    imagePath: photos[index],
                     fit: BoxFit.cover,
                   ),
                 );
