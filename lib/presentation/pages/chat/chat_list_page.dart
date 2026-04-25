@@ -80,7 +80,7 @@ class ChatListPage extends ConsumerWidget {
                       message: '你好呀～看到你的资料觉得很有缘！',
                       time: '10:30',
                       unreadCount: 3,
-                      avatar: null,
+                      avatar: 'https://randomuser.me/api/portraits/women/3.jpg',
                       age: 24,
                       city: '上海',
                       bio: '喜欢阅读和旅行，享受安静的午后时光',
@@ -96,7 +96,7 @@ class ChatListPage extends ConsumerWidget {
                       message: '那张照片是在哪里拍的？风景真美',
                       time: '昨天',
                       unreadCount: 0,
-                      avatar: null,
+                      avatar: 'https://randomuser.me/api/portraits/men/5.jpg',
                       age: 26,
                       city: '北京',
                       bio: '用脚步丈量世界，用镜头记录风景',
@@ -112,7 +112,7 @@ class ChatListPage extends ConsumerWidget {
                       message: '推荐你去试试那家新开的日料店！',
                       time: '昨天',
                       unreadCount: 1,
-                      avatar: null,
+                      avatar: 'https://randomuser.me/api/portraits/women/5.jpg',
                       age: 25,
                       city: '广州',
                       bio: '人生苦短，唯有美食不可辜负',
@@ -128,7 +128,7 @@ class ChatListPage extends ConsumerWidget {
                       message: '可以交流一下摄影技巧～',
                       time: '周一',
                       unreadCount: 0,
-                      avatar: null,
+                      avatar: 'https://randomuser.me/api/portraits/men/6.jpg',
                       age: 23,
                       city: '杭州',
                       bio: '摄影是光的绘画',
@@ -213,6 +213,15 @@ class ChatListPage extends ConsumerWidget {
                           child: Image.network(
                             chat.avatar!,
                             fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) =>
+                                Center(
+                              child: Text(
+                                chat.name.substring(0, 1),
+                                style: AppTheme.titleLarge.copyWith(
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
                           ),
                         )
                       : Center(

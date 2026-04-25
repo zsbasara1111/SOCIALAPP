@@ -229,6 +229,14 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
                         child: Image.network(
                           widget.avatar!,
                           fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) => Center(
+                            child: Text(
+                              widget.userName.substring(0, 1),
+                              style: AppTheme.headlineMedium.copyWith(
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
                         ),
                       )
                     : Center(

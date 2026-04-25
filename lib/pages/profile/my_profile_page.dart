@@ -96,11 +96,16 @@ class _MyProfilePageState extends ConsumerState<MyProfilePage>
                               ),
                               shape: BoxShape.circle,
                             ),
-                            child: const ClipOval(
-                              child: Icon(
-                                Icons.person,
-                                size: 40,
-                                color: Colors.white,
+                            child: ClipOval(
+                              child: Image.network(
+                                'https://randomuser.me/api/portraits/men/8.jpg',
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    const Icon(
+                                  Icons.person,
+                                  size: 40,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                           ),

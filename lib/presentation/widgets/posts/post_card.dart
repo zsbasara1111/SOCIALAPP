@@ -84,6 +84,11 @@ class PostCard extends StatelessWidget {
                   child: Image.network(
                     post.userAvatar!,
                     fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) =>
+                        const Icon(
+                      Icons.person,
+                      color: Colors.white,
+                    ),
                   ),
                 )
               : const Icon(
