@@ -1,10 +1,15 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
 
-/// 爱好库入口发光按钮
-/// 精确模拟 CSS box-shadow: inset 多层内发光旋转效果
-/// 参考：https://uiverse.io/dexter-st/bright-lizard-8
+/// 爱好库入口按钮 —— 粒子玻璃球效果
+/// 参考：https://uiverse.io/adamgiebl/dull-kangaroo-63
+///
+/// 视觉构成：
+/// 1. 圆形按钮，蓝白径向渐变背景
+/// 2. 外层青色发光阴影
+/// 3. 内部 12 个彩色模糊圆点以不同轨迹飘动（7s 周期）
+/// 4. 内层上下边缘 inset 高光
+/// 5. 中心"爱好"文字
 class HobbyGlowButton extends StatefulWidget {
   final VoidCallback? onTap;
   final double size;
@@ -20,28 +25,22 @@ class HobbyGlowButton extends StatefulWidget {
 }
 
 class _HobbyGlowButtonState extends State<HobbyGlowButton>
-    with TickerProviderStateMixin {
-  late final AnimationController _rotationController;
-  late final AnimationController _pulseController;
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
-    _rotationController = AnimationController(
+    // CSS: --duration: 7s
+    _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 2),
-    )..repeat();
-
-    _pulseController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 2),
+      duration: const Duration(seconds: 7),
     )..repeat();
   }
 
   @override
   void dispose() {
-    _rotationController.dispose();
-    _pulseController.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -49,32 +48,58 @@ class _HobbyGlowButtonState extends State<HobbyGlowButton>
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: widget.onTap,
-      child: ClipOval(
-        child: SizedBox(
-          width: widget.size,
-          height: widget.size,
+      child: Container(
+        width: widget.size,
+        height: widget.size,
+        decoration: const BoxDecoration(
+          shape: BoxShape.circle,
+          // 背景径向渐变：#15d2ff -> #72faff（80% 位置）
+          gradient: RadialGradient(
+            colors: [Color(0xFF15d2ff), Color(0xFF72faff)],
+            stops: [0.0, 0.8],
+          ),
+          // 外层发光阴影：0 0 14px rgba(87, 223, 255, .5)
+          boxShadow: [
+            BoxShadow(
+              color: Color(0x8057dfff),
+              blurRadius: 14,
+              spreadRadius: 2,
+            ),
+          ],
+        ),
+        // ClipOval 确保内部粒子超出圆形边界时被裁剪
+        child: ClipOval(
           child: Stack(
             alignment: Alignment.center,
             children: [
-              // 旋转发光层
+              // 粒子层（下层）
               AnimatedBuilder(
-                animation: _rotationController,
+                animation: _controller,
                 builder: (context, child) {
                   return CustomPaint(
                     size: Size(widget.size, widget.size),
-                    painter: _GlowRingPainter(
-                      progress: _rotationController.value,
+                    painter: _ParticlePainter(
+                      progress: _controller.value,
                     ),
                   );
                 },
               ),
-              // 中心文字"爱好"，带脉冲动画
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _buildLetter('爱', delaySeconds: 0),
-                  _buildLetter('好', delaySeconds: 0.3),
-                ],
+              // inset 阴影层（中层，覆盖在粒子上方）
+              CustomPaint(
+                size: Size(widget.size, widget.size),
+                painter: const _InsetShadowPainter(),
+              ),
+              // 文字层（最上层）
+              Text(
+                '爱好',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: widget.size * 0.22,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: AppTheme.fontFamily,
+                  letterSpacing: 0.5,
+                  height: 1.0,
+                ),
               ),
             ],
           ),
@@ -82,167 +107,214 @@ class _HobbyGlowButtonState extends State<HobbyGlowButton>
       ),
     );
   }
-
-  /// 构建单个脉冲文字
-  Widget _buildLetter(String letter, {required double delaySeconds}) {
-    return AnimatedBuilder(
-      animation: _pulseController,
-      builder: (context, child) {
-        final delay = delaySeconds / 2.0;
-        var t = (_pulseController.value + delay) % 1.0;
-
-        final opacity = _calculateOpacity(t);
-        final scale = _calculateScale(t);
-
-        return Opacity(
-          opacity: opacity,
-          child: Transform.scale(
-            scale: scale,
-            child: Text(
-              letter,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: widget.size * 0.23,
-                fontWeight: FontWeight.w600,
-                fontFamily: AppTheme.fontFamily,
-                height: 1.0,
-                letterSpacing: 1,
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  /// 计算脉冲透明度：0%->20% 淡入，20%->40% 淡出，40%->100% 保持
-  double _calculateOpacity(double t) {
-    if (t < 0.2) {
-      return 0.4 + (t / 0.2) * 0.6;
-    } else if (t < 0.4) {
-      return 1.0 - ((t - 0.2) / 0.2) * 0.3;
-    } else {
-      return 0.7 - ((t - 0.4) / 0.6) * 0.3;
-    }
-  }
-
-  /// 计算脉冲缩放：0%->20% 放大到 1.15，20%->40% 缩回 1.0
-  double _calculateScale(double t) {
-    if (t < 0.2) {
-      return 1.0 + (t / 0.2) * 0.15;
-    } else if (t < 0.4) {
-      return 1.15 - ((t - 0.2) / 0.2) * 0.15;
-    } else {
-      return 1.0;
-    }
-  }
 }
 
-/// 发光环绘制器
-///
-/// 核心原理：CSS box-shadow: inset 是在元素内边缘产生向内扩散的阴影。
-/// 要模拟这个效果，必须把 RadialGradient 的中心放在圆的下方外部，
-/// 这样圆底部靠近 gradient 中心（最亮），向上逐渐 fade，
-/// 正好还原"内阴影从底部边缘向内扩散"的视觉效果。
-class _GlowRingPainter extends CustomPainter {
+/// 粒子数据
+class _ParticleData {
+  final Color color;
+  final double blur;
+  final List<Offset> positions;
+
+  const _ParticleData({
+    required this.color,
+    required this.blur,
+    required this.positions,
+  });
+}
+
+/// 粒子绘制器
+/// 12 个彩色模糊圆点，每个在 3 个位置之间循环移动
+class _ParticlePainter extends CustomPainter {
   final double progress;
 
-  _GlowRingPainter({required this.progress});
+  _ParticlePainter({required this.progress});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = size.center(Offset.zero);
+    // CSS 圆点大小 40x40px，在 64px 按钮上按比例约 20px 直径 = 10px 半径
+    final dotRadius = size.width * 0.16;
+
+    // 12 个圆点定义，按 CSS 分组：
+    // 青色(1,9,10)、绿色(3,4)、粉色(5,6)、蓝色(2,7,8,11,12)
+    const particles = [
+      // === 青色组 ===
+      _ParticleData(
+        color: Color(0xB31ae8ff), // rgba(26, 232, 255, .7)
+        blur: 4,
+        positions: [
+          Offset(-20, -24), // 0%
+          Offset(-20, -4),  // 33%
+          Offset(-8, 16),   // 66%
+        ],
+      ),
+      _ParticleData(
+        color: Color(0xB31ae8ff),
+        blur: 4,
+        positions: [
+          Offset(-12, -16),
+          Offset(-12, -16), // 33% 与 0% 相同，前 1/3 不动
+          Offset(4, -12),
+        ],
+      ),
+      _ParticleData(
+        color: Color(0xB31ae8ff),
+        blur: 4,
+        positions: [
+          Offset(8, 8),
+          Offset(4, -4),
+          Offset(16, 4),
+        ],
+      ),
+      // === 绿色组 ===
+      _ParticleData(
+        color: Color(0xB31aff1a), // #1aff1a
+        blur: 7, // CSS: blur 14px
+        positions: [
+          Offset(-20, -12),
+          Offset(-8, 0),
+          Offset(-8, -8),
+        ],
+      ),
+      _ParticleData(
+        color: Color(0xB31aff1a),
+        blur: 7,
+        positions: [
+          Offset(12, -16),
+          Offset(8, -16),
+          Offset(20, -12),
+        ],
+      ),
+      // === 粉色组 ===
+      _ParticleData(
+        color: Color(0xB3ff1a75), // #ff1a75
+        blur: 8, // CSS: blur 16px
+        positions: [
+          Offset(-16, -8),
+          Offset(8, 4),
+          Offset(-4, -20),
+        ],
+      ),
+      _ParticleData(
+        color: Color(0xB3ff1a75),
+        blur: 8,
+        positions: [
+          Offset(8, 4),
+          Offset(-8, -16),
+          Offset(4, -24),
+        ],
+      ),
+      // === 蓝色组 ===
+      _ParticleData(
+        color: Color(0xB31aa3ff), // rgba(26, 163, 255, .7)
+        blur: 6, // CSS: blur 12px
+        positions: [
+          Offset(16, -8),
+          Offset(8, -16),
+          Offset(4, -24),
+        ],
+      ),
+      _ParticleData(
+        color: Color(0xB31aa3ff),
+        blur: 6,
+        positions: [
+          Offset(-16, 8),
+          Offset(-16, 8), // 33% 与 0% 相同
+          Offset(-8, -24),
+        ],
+      ),
+      _ParticleData(
+        color: Color(0xB31aa3ff),
+        blur: 6,
+        positions: [
+          Offset(4, -12),
+          Offset(-8, -12),
+          Offset(0, -16),
+        ],
+      ),
+      _ParticleData(
+        color: Color(0xB31aa3ff),
+        blur: 6,
+        positions: [
+          Offset(-16, -4),
+          Offset(-16, -4), // 33% 与 0% 相同
+          Offset(4, -4),
+        ],
+      ),
+      _ParticleData(
+        color: Color(0xB31aa3ff),
+        blur: 7, // CSS: blur 14px
+        positions: [
+          Offset(4, -4),
+          Offset(4, -8),
+          Offset(0, -20),
+        ],
+      ),
+    ];
+
+    for (final p in particles) {
+      final pos = _lerpPosition(p.positions, progress);
+      final paint = Paint()
+        ..color = p.color
+        // 使用 MaskFilter.blur 模拟 CSS filter: blur()
+        ..maskFilter = MaskFilter.blur(BlurStyle.normal, p.blur);
+      canvas.drawCircle(center + pos, dotRadius, paint);
+    }
+  }
+
+  /// 三阶段位置插值：0% -> 33% -> 66% -> 100%(回到 0%)
+  Offset _lerpPosition(List<Offset> positions, double t) {
+    if (t < 0.33) {
+      return Offset.lerp(positions[0], positions[1], t / 0.33)!;
+    } else if (t < 0.66) {
+      return Offset.lerp(positions[1], positions[2], (t - 0.33) / 0.33)!;
+    } else {
+      return Offset.lerp(positions[2], positions[0], (t - 0.66) / 0.34)!;
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _ParticlePainter oldDelegate) => true;
+}
+
+/// 内层 inset 阴影绘制器
+/// 模拟 CSS：inset 0 3px 12px rgba(52,223,255,.9), inset 0 -3px 4px rgba(215,250,255,.8)
+class _InsetShadowPainter extends CustomPainter {
+  const _InsetShadowPainter();
 
   @override
   void paint(Canvas canvas, Size size) {
     final center = size.center(Offset.zero);
     final radius = size.width / 2;
-
-    // 颜色在两种状态之间平滑振荡
-    final colorT = sin(progress * 2 * pi) * 0.5 + 0.5;
-
-    final midColor = Color.lerp(
-      const Color(0xFFad5fff),
-      const Color(0xFFd60a47),
-      colorT,
-    )!;
-    final outerColor = Color.lerp(
-      const Color(0xFF471eec),
-      const Color(0xFF311e80),
-      colorT,
-    )!;
-
-    // CSS 动画从 rotate(90deg) 开始
-    final rotation = pi / 2 + progress * 2 * pi;
-
-    // 1. 先画深色圆底，让发光在白色背景上足够明显
-    final bgPaint = Paint()..color = const Color(0xFF0D0D1A);
-    canvas.drawCircle(center, radius, bgPaint);
-
-    canvas.save();
-
-    // 2. 旋转画布（不 clip，让发光层自由旋转）
-    canvas.translate(center.dx, center.dy);
-    canvas.rotate(rotation);
-    canvas.translate(-center.dx, -center.dy);
-
     final rect = Rect.fromCircle(center: center, radius: radius);
 
-    // 3. 外层发光 - 深蓝/暗蓝
-    // CSS: 0 60px 60px 0 #471eec inset
-    // offset=60, blur=60。在 radius=90 的圆上，offset 比例 0.67。
-    // gradient 中心放在圆下方 1.5r 处，半径 2.2r，确保圆底部最亮、向上 fade。
-    final outerPaint = Paint()
-      ..shader = RadialGradient(
-        center: const Alignment(0, 1.5),
-        radius: 2.2,
+    // 顶部内阴影：青色 #34dfff，模拟从顶部边缘向内扩散
+    final topPaint = Paint()
+      ..shader = const RadialGradient(
+        center: Alignment(0, -1.8),
+        radius: 2.5,
         colors: [
-          outerColor.withOpacity(0.85),
-          outerColor.withOpacity(0.4),
+          Color(0x6634dfff),
           Colors.transparent,
         ],
-        stops: const [0.0, 0.5, 1.0],
+        stops: [0.0, 1.0],
       ).createShader(rect);
-    canvas.drawCircle(center, radius, outerPaint);
+    canvas.drawCircle(center, radius, topPaint);
 
-    // 4. 中层发光 - 紫/品红
-    // CSS: 0 20px 30px 0 #ad5fff inset
-    // offset=20, blur=30。offset 比例 0.22。
-    final midPaint = Paint()
-      ..shader = RadialGradient(
-        center: const Alignment(0, 1.2),
-        radius: 1.8,
+    // 底部内阴影：白色 #d7faff，模拟从底部边缘向内扩散
+    final bottomPaint = Paint()
+      ..shader = const RadialGradient(
+        center: Alignment(0, 1.8),
+        radius: 2.5,
         colors: [
-          midColor.withOpacity(0.8),
-          midColor.withOpacity(0.3),
+          Color(0x66d7faff),
           Colors.transparent,
         ],
-        stops: const [0.0, 0.5, 1.0],
+        stops: [0.0, 1.0],
       ).createShader(rect);
-    canvas.drawCircle(center, radius, midPaint);
-
-    // 5. 内层发光 - 白色
-    // CSS: 0 10px 20px 0 #fff inset
-    // offset=10, blur=20。offset 比例 0.11。
-    final innerPaint = Paint()
-      ..shader = RadialGradient(
-        center: const Alignment(0, 1.05),
-        radius: 1.5,
-        colors: [
-          Colors.white.withOpacity(0.75),
-          Colors.white.withOpacity(0.25),
-          Colors.transparent,
-        ],
-        stops: const [0.0, 0.5, 1.0],
-      ).createShader(rect);
-    canvas.drawCircle(center, radius, innerPaint);
-
-    canvas.restore();
-
-    // 6. subtle 白色边框，增强圆形轮廓
-    final borderPaint = Paint()
-      ..color = Colors.white.withOpacity(0.3)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.0;
-    canvas.drawCircle(center, radius - 0.5, borderPaint);
+    canvas.drawCircle(center, radius, bottomPaint);
   }
 
   @override
-  bool shouldRepaint(covariant _GlowRingPainter oldDelegate) => true;
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
