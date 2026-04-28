@@ -226,10 +226,11 @@ class _MatchPageState extends ConsumerState<MatchPage> {
   /// 构建操作按钮
   Widget _buildActionButtons(BuildContext context, String userId) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppTheme.spaceXl),
+      padding: const EdgeInsets.symmetric(horizontal: AppTheme.spaceLg),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          // 左侧留白，将X按钮推向左半区
+          const Spacer(flex: 3),
           // 不喜欢按钮
           _buildActionButton(
             icon: Icons.close,
@@ -240,9 +241,8 @@ class _MatchPageState extends ConsumerState<MatchPage> {
               ref.read(matchProvider.notifier).dislikeUser(userId);
             },
           ),
-
-          const SizedBox(width: AppTheme.space2Xl),
-
+          // 中间留白
+          const Spacer(flex: 3),
           // 喜欢按钮
           _buildActionButton(
             icon: Icons.favorite,
@@ -253,6 +253,8 @@ class _MatchPageState extends ConsumerState<MatchPage> {
               ref.read(matchProvider.notifier).likeUser(userId);
             },
           ),
+          // 右侧留白，将心按钮推向右半区
+          const Spacer(flex: 3),
         ],
       ),
     );
