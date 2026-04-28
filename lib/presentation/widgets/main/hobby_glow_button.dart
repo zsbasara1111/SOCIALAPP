@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
 
 /// 爱好库入口发光按钮
-/// 旋转多层渐变光环 + 中心"爱好"脉冲文字
+/// 模拟 CSS inset box-shadow 多层内发光旋转效果
+/// 参考：https://uiverse.io/dexter-st/bright-lizard-8
 class HobbyGlowButton extends StatefulWidget {
   final VoidCallback? onTap;
   final double size;
@@ -54,7 +55,7 @@ class _HobbyGlowButtonState extends State<HobbyGlowButton>
         child: Stack(
           alignment: Alignment.center,
           children: [
-            // 旋转发光环
+            // 旋转发光层
             AnimatedBuilder(
               animation: _rotationController,
               builder: (context, child) {
@@ -85,8 +86,7 @@ class _HobbyGlowButtonState extends State<HobbyGlowButton>
     return AnimatedBuilder(
       animation: _pulseController,
       builder: (context, child) {
-        final cycleDuration = 2.0; // 动画周期 2 秒
-        final delay = delaySeconds / cycleDuration; // 转换为 0-1 范围
+        final delay = delaySeconds / 2.0;
         var t = (_pulseController.value + delay) % 1.0;
 
         final opacity = _calculateOpacity(t);
@@ -100,10 +100,11 @@ class _HobbyGlowButtonState extends State<HobbyGlowButton>
               letter,
               style: TextStyle(
                 color: Colors.white,
-                fontSize: widget.size * 0.22,
-                fontWeight: FontWeight.w500,
+                fontSize: widget.size * 0.23,
+                fontWeight: FontWeight.w600,
                 fontFamily: AppTheme.fontFamily,
                 height: 1.0,
+                letterSpacing: 1,
               ),
             ),
           ),
@@ -113,9 +114,6 @@ class _HobbyGlowButtonState extends State<HobbyGlowButton>
   }
 
   /// 计算脉冲透明度
-  /// 0%-20%: 0.4 -> 1.0
-  /// 20%-40%: 1.0 -> 0.7
-  /// 40%-100%: 0.7 -> 0.4
   double _calculateOpacity(double t) {
     if (t < 0.2) {
       return 0.4 + (t / 0.2) * 0.6;
@@ -127,9 +125,6 @@ class _HobbyGlowButtonState extends State<HobbyGlowButton>
   }
 
   /// 计算脉冲缩放
-  /// 0%-20%: 1.0 -> 1.15
-  /// 20%-40%: 1.15 -> 1.0
-  /// 40%-100%: 1.0
   double _calculateScale(double t) {
     if (t < 0.2) {
       return 1.0 + (t / 0.2) * 0.15;
@@ -142,18 +137,18 @@ class _HobbyGlowButtonState extends State<HobbyGlowButton>
 }
 
 /// 发光环绘制器
-/// 模拟 CSS inset box-shadow 多层内发光效果
+/// 核心思路：用向下偏移的 RadialGradient 模拟 CSS inset box-shadow
 class _GlowRingPainter extends CustomPainter {
   final double progress;
 
-  _GlowRingPainter({required this.progress}) : super(repaint: null);
+  _GlowRingPainter({required this.progress});
 
   @override
   void paint(Canvas canvas, Size size) {
     final center = size.center(Offset.zero);
     final radius = size.width / 2;
 
-    // 颜色在两种状态之间振荡：0%/100% <-> 50%
+    // 颜色在两种状态之间振荡
     final colorT = sin(progress * 2 * pi) * 0.5 + 0.5;
 
     final midColor = Color.lerp(
@@ -170,89 +165,74 @@ class _GlowRingPainter extends CustomPainter {
     // 旋转从 90° 开始，与 CSS 关键帧一致
     final rotation = pi / 2 + progress * 2 * pi;
 
+    // 1. 先画深色圆底，让发光在白色背景上足够明显
+    final bgPaint = Paint()
+      ..color = const Color(0xFF0D0D1A);
+    canvas.drawCircle(center, radius, bgPaint);
+
     canvas.save();
 
-    // 裁剪为圆形，确保发光不溢出按钮边界
-    final clipPath = Path()
-      ..addOval(Rect.fromCircle(center: center, radius: radius));
-    canvas.clipPath(clipPath);
-
-    // 旋转画布
+    // 2. 旋转画布（不 clip，让渐变自然 fade）
     canvas.translate(center.dx, center.dy);
     canvas.rotate(rotation);
     canvas.translate(-center.dx, -center.dy);
 
-    // 外层发光 - 深蓝/暗蓝，大半径，远偏移
-    _drawGlowCircle(
-      canvas,
-      center: center,
-      radius: radius * 0.9,
-      color: outerColor,
-      intensity: 0.35,
-      offset: const Offset(0, 18),
-      spread: 0.85,
-    );
+    final rect = Rect.fromCircle(center: center, radius: radius);
 
-    // 中层发光 - 紫/品红，中半径，中偏移
-    _drawGlowCircle(
-      canvas,
-      center: center,
-      radius: radius * 0.75,
-      color: midColor,
-      intensity: 0.3,
-      offset: const Offset(0, 10),
-      spread: 0.75,
-    );
+    // 3. 外层发光 - 深蓝/暗蓝
+    // 模拟 CSS：0 60px 60px 0 #471eec inset
+    // gradient 中心放在圆的下方，这样圆内下半部有颜色，向上 fade
+    final outerPaint = Paint()
+      ..shader = RadialGradient(
+        center: const Alignment(0, 0.95),
+        radius: 1.4,
+        colors: [
+          outerColor.withOpacity(0.75),
+          outerColor.withOpacity(0.35),
+          Colors.transparent,
+        ],
+        stops: const [0.0, 0.45, 1.0],
+      ).createShader(rect);
+    canvas.drawCircle(center, radius, outerPaint);
 
-    // 内层发光 - 白色，小半径，近偏移
-    _drawGlowCircle(
-      canvas,
-      center: center,
-      radius: radius * 0.55,
-      color: Colors.white,
-      intensity: 0.25,
-      offset: const Offset(0, 4),
-      spread: 0.6,
-    );
+    // 4. 中层发光 - 紫/品红
+    // 模拟 CSS：0 20px 30px 0 #ad5fff inset
+    final midPaint = Paint()
+      ..shader = RadialGradient(
+        center: const Alignment(0, 0.75),
+        radius: 1.1,
+        colors: [
+          midColor.withOpacity(0.7),
+          midColor.withOpacity(0.25),
+          Colors.transparent,
+        ],
+        stops: const [0.0, 0.5, 1.0],
+      ).createShader(rect);
+    canvas.drawCircle(center, radius, midPaint);
+
+    // 5. 内层发光 - 白色
+    // 模拟 CSS：0 10px 20px 0 #fff inset
+    final innerPaint = Paint()
+      ..shader = RadialGradient(
+        center: const Alignment(0, 0.6),
+        radius: 0.9,
+        colors: [
+          Colors.white.withOpacity(0.65),
+          Colors.white.withOpacity(0.15),
+          Colors.transparent,
+        ],
+        stops: const [0.0, 0.5, 1.0],
+      ).createShader(rect);
+    canvas.drawCircle(center, radius, innerPaint);
 
     canvas.restore();
 
-    //  subtle 白色边框，增强轮廓感
+    // 6.  subtle 白色边框，增强圆形轮廓
     final borderPaint = Paint()
       ..color = Colors.white.withOpacity(0.25)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.0;
     canvas.drawCircle(center, radius - 0.5, borderPaint);
-  }
-
-  /// 绘制单个发光圆
-  /// 使用径向渐变模拟 CSS 的 inset box-shadow
-  void _drawGlowCircle(
-    Canvas canvas, {
-    required Offset center,
-    required double radius,
-    required Color color,
-    required double intensity,
-    required Offset offset,
-    required double spread,
-  }) {
-    final glowCenter = center + offset;
-
-    final paint = Paint()
-      ..shader = RadialGradient(
-        center: Alignment.center,
-        radius: 1.0,
-        colors: [
-          color.withOpacity(intensity),
-          color.withOpacity(intensity * 0.6),
-          Colors.transparent,
-        ],
-        stops: [0.0, spread * 0.5, spread],
-      ).createShader(
-        Rect.fromCircle(center: glowCenter, radius: radius),
-      );
-
-    canvas.drawCircle(glowCenter, radius, paint);
   }
 
   @override
