@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/router/app_router.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/widgets.dart';
-import '../../presentation/widgets/main/planet_orbit_button.dart';
+import '../../presentation/widgets/main/hobby_glow_button.dart';
 
 /// 主页面 Scaffold (带底部导航)
 class MainScaffold extends StatelessWidget {
@@ -160,9 +160,9 @@ class MainScaffold extends StatelessWidget {
 
   /// 爱好库入口按钮
   Widget _buildFab(BuildContext context) {
-    return PlanetOrbitButton(
+    return HobbyGlowButton(
       onTap: () => context.push(RoutePaths.hobbyLibrary),
-      size: 56,
+      size: 64,
     );
   }
 }
