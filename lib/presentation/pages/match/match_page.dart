@@ -6,6 +6,8 @@ import '../../providers/match_provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../widgets/match/match_card.dart';
 import '../../widgets/match/match_success_dialog.dart';
+import '../../widgets/match/match_mode_selector.dart';
+import '../../widgets/match/match_quota_indicator.dart';
 
 /// 匹配页面 - Mindate 清新风格
 class MatchPage extends ConsumerStatefulWidget {
@@ -60,6 +62,14 @@ class _MatchPageState extends ConsumerState<MatchPage> {
           children: [
             // 顶部导航
             _buildAppBar(context, matchState),
+
+            // 匹配模式选择器
+            const MatchModeSelector(),
+
+            const SizedBox(height: AppTheme.spaceMd),
+
+            // 匹配次数指示器
+            const MatchQuotaIndicator(),
 
             // 匹配卡片区域（占据大部分空间）
             Expanded(
