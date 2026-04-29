@@ -66,8 +66,19 @@ class MainScaffold extends StatelessWidget {
                     isActive: navigationShell.currentIndex == 1,
                     onTap: () => navigationShell.goBranch(1),
                   ),
-                  // 中间占位（给按钮+文字留空间）
-                  const SizedBox(width: 64),
+                  // 中间占位：文字标签与其他图标底部对齐
+                  const SizedBox(
+                    width: 64,
+                    child: Text(
+                      '爱好库',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w500,
+                        color: AppTheme.textTertiary,
+                      ),
+                    ),
+                  ),
                   // 聊天
                   _buildNavItem(
                     icon: Icons.chat_bubble_outline,
@@ -90,26 +101,12 @@ class MainScaffold extends StatelessWidget {
             ),
           ),
         ),
-        // 爱好库按钮 + 标签，底部与图标底部对齐
+        // 爱好库入口按钮，底部严格与图标底部对齐（SafeArea 34 + Padding 8）
         Positioned(
-          bottom: 34,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              HobbyGlowButton(
-                onTap: () => context.push(RoutePaths.hobbyLibrary),
-                size: 52,
-              ),
-              const SizedBox(height: 2),
-              const Text(
-                '爱好库',
-                style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w500,
-                  color: AppTheme.textTertiary,
-                ),
-              ),
-            ],
+          bottom: 42,
+          child: HobbyGlowButton(
+            onTap: () => context.push(RoutePaths.hobbyLibrary),
+            size: 56,
           ),
         ),
       ],
