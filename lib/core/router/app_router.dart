@@ -11,6 +11,7 @@ import '../../pages/profile/profile_setup_page.dart';
 import '../../presentation/pages/match/match_page.dart';
 import '../../presentation/pages/posts/posts_page.dart';
 import '../../presentation/pages/chat/chat_list_page.dart';
+import '../../presentation/pages/chat/chat_detail_page.dart';
 import '../../pages/profile/my_profile_page.dart';
 import '../../pages/main/main_scaffold.dart';
 import '../../presentation/pages/vip/vip_center_page.dart';
@@ -292,6 +293,27 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: RoutePaths.chat,
                 name: RouteNames.chat,
                 builder: (context, state) => const ChatListPage(),
+                routes: [
+                  GoRoute(
+                    path: 'detail',
+                    name: 'chat-detail',
+                    builder: (context, state) {
+                      final extra = state.extra as Map<String, dynamic>? ?? {};
+                      final hobbiesRaw = extra['matchUserHobbies'] as List<dynamic>? ?? [];
+                      return ChatDetailPage(
+                        userId: extra['userId'] as String? ?? '',
+                        userName: extra['userName'] as String? ?? '',
+                        avatar: extra['avatar'] as String?,
+                        age: extra['age'] as int?,
+                        city: extra['city'] as String?,
+                        bio: extra['bio'] as String?,
+                        matchUserHobbies: hobbiesRaw
+                            .whereType<UserHobbyItem>()
+                            .toList(),
+                      );
+                    },
+                  ),
+                ],
               ),
             ],
           ),
@@ -391,4 +413,10 @@ extension GoRouterExtension on BuildContext {
 
   /// 前往设置页面
   void goSettings() => push(RoutePaths.settings);
+
+  /// 前往聊天详情页
+  void goChatDetail(Map<String, dynamic> extra) => push(
+        '/chat/detail',
+        extra: extra,
+      );
 }

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/router/app_router.dart';
 import '../../../core/widgets/app_image.dart';
 import '../../providers/hobby_provider.dart';
 import '../../providers/red_heart_provider.dart';
-import 'chat_detail_page.dart';
 
 /// 聊天列表页面 - Mindate 清新风格
 class ChatListPage extends ConsumerWidget {
@@ -149,19 +149,15 @@ class ChatListPage extends ConsumerWidget {
                     context,
                     chat: chat,
                     onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => ChatDetailPage(
-                            userId: chat.id,
-                            userName: chat.name,
-                            avatar: chat.avatar,
-                            age: chat.age,
-                            city: chat.city,
-                            bio: chat.bio,
-                            matchUserHobbies: chat.hobbies,
-                          ),
-                        ),
-                      );
+                      context.goChatDetail({
+                        'userId': chat.id,
+                        'userName': chat.name,
+                        'avatar': chat.avatar,
+                        'age': chat.age,
+                        'city': chat.city,
+                        'bio': chat.bio,
+                        'matchUserHobbies': chat.hobbies,
+                      });
                     },
                   );
                 },

@@ -32,9 +32,15 @@ class MainScaffold extends StatelessWidget {
         Container(
           decoration: BoxDecoration(
             color: AppTheme.surface.withOpacity(0.95),
+            border: Border(
+              top: BorderSide(
+                color: AppTheme.primary.withOpacity(0.15),
+                width: 1,
+              ),
+            ),
             boxShadow: [
               BoxShadow(
-                color: AppTheme.primary.withOpacity(0.06),
+                color: AppTheme.primary.withOpacity(0.08),
                 blurRadius: 20,
                 offset: const Offset(0, -4),
               ),
