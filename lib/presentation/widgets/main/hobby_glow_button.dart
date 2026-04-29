@@ -91,13 +91,12 @@ class _HobbyGlowButtonState extends State<HobbyGlowButton>
               ),
               // 文字层（最上层）
               Text(
-                '爱好',
+                '+',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: widget.size * 0.22,
-                  fontWeight: FontWeight.w600,
+                  fontSize: widget.size * 0.38,
+                  fontWeight: FontWeight.w300,
                   fontFamily: AppTheme.fontFamily,
-                  letterSpacing: 0.5,
                   height: 1.0,
                 ),
               ),
