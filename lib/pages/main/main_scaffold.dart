@@ -103,7 +103,7 @@ class MainScaffold extends StatelessWidget {
         ),
         // 爱好库入口按钮，底部严格与图标底部对齐（SafeArea 34 + Padding 8）
         Positioned(
-          bottom: 42,
+          bottom: 32,
           child: HobbyGlowButton(
             onTap: () => context.push(RoutePaths.hobbyLibrary),
             size: 56,
