@@ -55,6 +55,7 @@ class RouteNames {
   static const String likedUsers = 'liked-users';
   static const String visitors = 'visitors';
   static const String whoLikedMe = 'who-liked-me';
+  static const String chatDetail = 'chat-detail';
   static const String settings = 'settings';
 }
 
@@ -85,6 +86,7 @@ class RoutePaths {
   static const String visitors = '/visitors';
   static const String whoLikedMe = '/who-liked-me';
   static const String settings = '/settings';
+  static const String chatDetail = '/chat-detail';
 }
 
 /// 路由状态
@@ -244,6 +246,27 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const WhoLikedMePage(),
       ),
 
+      // 聊天详情页（独立全屏，不保留底部导航栏）
+      GoRoute(
+        path: RoutePaths.chatDetail,
+        name: RouteNames.chatDetail,
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>? ?? {};
+          final hobbiesRaw = extra['matchUserHobbies'] as List<dynamic>? ?? [];
+          return ChatDetailPage(
+            userId: extra['userId'] as String? ?? '',
+            userName: extra['userName'] as String? ?? '',
+            avatar: extra['avatar'] as String?,
+            age: extra['age'] as int?,
+            city: extra['city'] as String?,
+            bio: extra['bio'] as String?,
+            matchUserHobbies: hobbiesRaw
+                .whereType<UserHobbyItem>()
+                .toList(),
+          );
+        },
+      ),
+
       // 设置
       GoRoute(
         path: RoutePaths.settings,
@@ -293,27 +316,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: RoutePaths.chat,
                 name: RouteNames.chat,
                 builder: (context, state) => const ChatListPage(),
-                routes: [
-                  GoRoute(
-                    path: 'detail',
-                    name: 'chat-detail',
-                    builder: (context, state) {
-                      final extra = state.extra as Map<String, dynamic>? ?? {};
-                      final hobbiesRaw = extra['matchUserHobbies'] as List<dynamic>? ?? [];
-                      return ChatDetailPage(
-                        userId: extra['userId'] as String? ?? '',
-                        userName: extra['userName'] as String? ?? '',
-                        avatar: extra['avatar'] as String?,
-                        age: extra['age'] as int?,
-                        city: extra['city'] as String?,
-                        bio: extra['bio'] as String?,
-                        matchUserHobbies: hobbiesRaw
-                            .whereType<UserHobbyItem>()
-                            .toList(),
-                      );
-                    },
-                  ),
-                ],
               ),
             ],
           ),
@@ -416,7 +418,7 @@ extension GoRouterExtension on BuildContext {
 
   /// 前往聊天详情页
   void goChatDetail(Map<String, dynamic> extra) => push(
-        '/chat/detail',
+        RoutePaths.chatDetail,
         extra: extra,
       );
 }
