@@ -19,72 +19,100 @@ class MainScaffold extends StatelessWidget {
     return Scaffold(
       body: navigationShell,
       bottomNavigationBar: _buildBottomNavBar(context),
-      floatingActionButton: _buildFab(context),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 
-  /// 底部导航栏 - Mindate 纯图标风格
+  /// 底部导航栏 - 中间按钮嵌入，下方带标签
   Widget _buildBottomNavBar(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppTheme.surface.withOpacity(0.95),
-        boxShadow: [
-          BoxShadow(
-            color: AppTheme.primary.withOpacity(0.06),
-            blurRadius: 20,
-            offset: const Offset(0, -4),
+    return Stack(
+      alignment: Alignment.bottomCenter,
+      clipBehavior: Clip.none,
+      children: [
+        // 底层导航栏
+        Container(
+          decoration: BoxDecoration(
+            color: AppTheme.surface.withOpacity(0.95),
+            boxShadow: [
+              BoxShadow(
+                color: AppTheme.primary.withOpacity(0.06),
+                blurRadius: 20,
+                offset: const Offset(0, -4),
+              ),
+            ],
           ),
-        ],
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppTheme.spaceXl,
-            vertical: AppTheme.spaceSm,
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppTheme.spaceXl,
+                vertical: AppTheme.spaceSm,
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  // 匹配
+                  _buildNavItem(
+                    icon: Icons.people_outline,
+                    activeIcon: Icons.people,
+                    label: '匹配',
+                    isActive: navigationShell.currentIndex == 0,
+                    onTap: () => navigationShell.goBranch(0),
+                  ),
+                  // 动态
+                  _buildNavItem(
+                    icon: Icons.explore_outlined,
+                    activeIcon: Icons.explore,
+                    label: '动态',
+                    isActive: navigationShell.currentIndex == 1,
+                    onTap: () => navigationShell.goBranch(1),
+                  ),
+                  // 中间占位（给按钮+文字留空间）
+                  const SizedBox(width: 64),
+                  // 聊天
+                  _buildNavItem(
+                    icon: Icons.chat_bubble_outline,
+                    activeIcon: Icons.chat_bubble,
+                    label: '聊天',
+                    isActive: navigationShell.currentIndex == 3,
+                    badgeCount: 3,
+                    onTap: () => navigationShell.goBranch(3),
+                  ),
+                  // 我的
+                  _buildNavItem(
+                    icon: Icons.person_outline,
+                    activeIcon: Icons.person,
+                    label: '我的',
+                    isActive: navigationShell.currentIndex == 4,
+                    onTap: () => navigationShell.goBranch(4),
+                  ),
+                ],
+              ),
+            ),
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+        ),
+        // 爱好库按钮 + 标签，底部与图标底部对齐
+        Positioned(
+          bottom: 34,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              // 匹配
-              _buildNavItem(
-                icon: Icons.people_outline,
-                activeIcon: Icons.people,
-                label: '匹配',
-                isActive: navigationShell.currentIndex == 0,
-                onTap: () => navigationShell.goBranch(0),
+              HobbyGlowButton(
+                onTap: () => context.push(RoutePaths.hobbyLibrary),
+                size: 52,
               ),
-              // 动态
-              _buildNavItem(
-                icon: Icons.explore_outlined,
-                activeIcon: Icons.explore,
-                label: '动态',
-                isActive: navigationShell.currentIndex == 1,
-                onTap: () => navigationShell.goBranch(1),
-              ),
-              // 中间占位 (星球按钮)
-              const SizedBox(width: 56),
-              // 聊天
-              _buildNavItem(
-                icon: Icons.chat_bubble_outline,
-                activeIcon: Icons.chat_bubble,
-                label: '聊天',
-                isActive: navigationShell.currentIndex == 3,
-                badgeCount: 3,
-                onTap: () => navigationShell.goBranch(3),
-              ),
-              // 我的
-              _buildNavItem(
-                icon: Icons.person_outline,
-                activeIcon: Icons.person,
-                label: '我的',
-                isActive: navigationShell.currentIndex == 4,
-                onTap: () => navigationShell.goBranch(4),
+              const SizedBox(height: 2),
+              const Text(
+                '爱好库',
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w500,
+                  color: AppTheme.textTertiary,
+                ),
               ),
             ],
           ),
         ),
-      ),
+      ],
     );
   }
 
@@ -158,11 +186,4 @@ class MainScaffold extends StatelessWidget {
     );
   }
 
-  /// 爱好库入口按钮
-  Widget _buildFab(BuildContext context) {
-    return HobbyGlowButton(
-      onTap: () => context.push(RoutePaths.hobbyLibrary),
-      size: 64,
-    );
-  }
 }
